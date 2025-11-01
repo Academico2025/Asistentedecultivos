@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <title>Asistente Docente de Ciencias Sociales</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --primary: #3498db;
+            --primary-dark: #2980b9;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --bg-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --radius: 16px;
+            --shadow: 0 4px 20px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--dark);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            touch-action: manipulation;
+        }
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            position: relative;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            font-size: clamp(1.4rem, 4vw, 2rem);
+            color: var(--dark);
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+        }
+        header p {
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            color: #7f8c8d;
+        }
+        .connection-status {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--danger);
+            box-shadow: 0 0 10px var(--danger);
+            transition: var(--transition);
+        }
+        .connected { background: var(--success); box-shadow: 0 0 10px var(--success); }
+        .header-btns {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+        .header-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+        .fullscreen-btn { background: rgba(0,0,0,0.5); color: white; }
+        .settings-btn { background: rgba(255,255,255,0.9); color: var(--dark); }
+        .header-btn:hover { transform: scale(1.05); }
+        .header-btn:active { transform: scale(0.95); }
+
+        /* Sección API (oculta) */
+        .api-key-section {
+            background: white;
+            padding: 1.5rem;
+            margin: 1rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            display: none;
+        }
+        .api-key-section h2 { font-size: 1.3rem; margin-bottom: 0.8rem; color: var(--dark); }
+        .api-key-section p { font-size: 0.9rem; color: #7f8c8d; margin-bottom: 1rem; }
+        .api-key-section label { display: block; text-align: left; margin: 0.8rem 10% 0.3rem; font-weight: 600; font-size: 0.95rem; }
+        .api-key-section input {
+            width: 80%;
+            padding: 0.9rem;
+            font-size: 1rem;
+            border: 2px solid #bdc3c7;
+            border-radius: 12px;
+            transition: var(--transition);
+        }
+        .api-key-section input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2); }
+        .api-key-section .btn-group {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+        .test-result {
+            margin-top: 0.8rem;
+            padding: 0.8rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            white-space: pre-line;
+            max-height: 120px;
+            overflow-y: auto;
+            display: none;
+        }
+        .success { background: #d5f5e3; color: var(--success); }
+        .error { background: #fadbd8; color: var(--danger); }
+
+        /* App principal */
+        .main-app {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            padding: 1rem;
+            overflow: hidden;
+            gap: 1rem;
+        }
+        .grado-selector {
+            background: white;
+            padding: 1rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+        .grado-selector label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--dark);
+        }
+        .grado-selector select {
+            width: 100%;
+            max-width: 320px;
+            padding: 0.9rem;
+            font-size: 1rem;
+            border: 2px solid #bdc3c7;
+            border-radius: 12px;
+            background: white;
+            transition: var(--transition);
+        }
+        .grado-selector select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        .chat-container {
+            flex: 1;
+            background: rgba(255,255,255,0.95);
+            border-radius: var(--radius);
+            padding: 1rem;
+            overflow-y: auto;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        .message {
+            max-width: 82%;
+            padding: 1rem 1.2rem;
+            border-radius: 18px;
+            word-wrap: break-word;
+            font-size: 1rem;
+            line-height: 1.5;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .user-message {
+            background: var(--primary);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        .ai-message {
+            background: var(--light);
+            color: var(--dark);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 0.6rem;
+            align-items: center;
+            background: white;
+            padding: 0.8rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+        #userInput {
+            flex: 1;
+            padding: 1rem;
+            font-size: 1.05rem;
+            border: 2px solid #bdc3c7;
+            border-radius: 12px;
+            transition: var(--transition);
+        }
+        #userInput:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        .action-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.4rem;
+            transition: var(--transition);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+        }
+        .mic-btn { background: var(--danger); color: white; }
+        .send-btn { background: var(--success); color: white; }
+        .stop-btn { background: #9b59b6; color: white; }
+        .pdf-btn { background: #f1c40f; color: white; }
+        .clear-btn { background: #e67e22; color: white; }
+        .action-btn:hover { transform: scale(1.08); }
+        .action-btn:active { transform: scale(0.95); }
+        .listening {
+            background: var(--warning) !important;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(243, 156, 18, 0.7); }
+            70% { box-shadow: 0 0 0 12px rgba(243, 156, 18, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(243, 156, 18, 0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .input-area { flex-wrap: wrap; }
+            .action-btn { width: 50px; height: 50px; font-size: 1.2rem; }
+            .chat-container { padding: 0.8rem; }
+            .message { font-size: 0.95rem; padding: 0.9rem; }
+        }
+        @media (max-width: 480px) {
+            header { padding: 0.8rem; }
+            .header-btns { gap: 0.3rem; }
+            .header-btn { width: 42px; height: 42px; font-size: 1rem; }
+            .grado-selector select { font-size: 0.95rem; }
+            .input-area { padding: 0.6rem; gap: 0.4rem; }
+            #userInput { font-size: 1rem; padding: 0.8rem; }
+        }
+        @media (orientation: landscape) and (max-height: 600px) {
+            .grado-selector { padding: 0.6rem; }
+            .chat-container { padding: 0.6rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="connection-status" id="connectionStatus"></div>
+        <h3>Yesenia Muñoz Ruiz - UNAD 2025</h3>
+        <h1>Asistente Docente de Ciencias Sociales</h1>
+        <p>Tu profesor virtual para Primaria y Secundaria</p>
+        <div class="header-btns">
+            <button class="header-btn fullscreen-btn" onclick="toggleFullscreen()" title="Pantalla completa">Pantalla Completa</button>
+            <button class="header-btn settings-btn" onclick="showApiSettings()" title="Configuración">Configuración</button>
+        </div>
+    </header>
+
+    <!-- Configuración API (oculta) -->
+    <div class="api-key-section" id="apiSection">
+        <h2>Configuración de API Key</h2>
+        <p>Clave y modelo preconfigurados. Usa "Probar" si hay problemas.</p>
+        
+        <label for="apiKeyInput">API Key:</label>
+        <input type="password" id="apiKeyInput" value="AIzaSyA166DZ6xLWIScCxP5j0kN_OHrnRgUBCZk">
+
+        <label for="modelInput">Modelo:</label>
+        <input type="text" id="modelInput" value="gemini-2.5-flash">
+
+        <div class="btn-group">
+            <button onclick="testApiKey()">Probar</button>
+            <button onclick="saveApiKey()">Guardar</button>
+            <button onclick="resetApiKey()">Restablecer</button>
+        </div>
+
+        <div id="testResult" class="test-result"></div>
+    </div>
+
+    <!-- Aplicación principal -->
+    <div class="main-app" id="mainApp">
+        <div class="grado-selector">
+            <label for="gradoSelect">Selecciona tu grado:</label>
+            <select id="gradoSelect">
+                <option value="1-primaria">1° de Primaria</option>
+                <option value="2-primaria">2° de Primaria</option>
+                <option value="3-primaria">3° de Primaria</option>
+                <option value="4-primaria">4° de Primaria</option>
+                <option value="5-primaria">5° de Primaria</option>
+                <option value="6-secundaria">6° de Secundaria</option>
+                <option value="7-secundaria">7° de Secundaria</option>
+                <option value="8-secundaria">8° de Secundaria</option>
+                <option value="9-secundaria">9° de Secundaria</option>
+                <option value="10-secundaria">10° de Secundaria</option>
+                <option value="11-secundaria">11° de Secundaria</option>
+            </select>
+        </div>
+
+        <div class="chat-container" id="chatContainer">
+            <div class="message ai-message">
+                <strong>¡Hola!</strong> Selecciona tu grado y pregúntame sobre Historia, Geografía o Ciudadanía. ¡Puedo escucharte!
+            </div>
+        </div>
+
+        <div class="input-area">
+            <input type="text" id="userInput" placeholder="Escribe o habla tu pregunta...">
+            <button class="action-btn mic-btn" id="micBtn" onclick="toggleListening()" title="Hablar">Micrófono</button>
+            <button class="action-btn send-btn" onclick="sendMessage()" title="Enviar">Enviar</button>
+            <button class="action-btn stop-btn" onclick="stopSpeaking()" title="Detener sonido">Sonido</button>
+            <button class="action-btn pdf-btn" onclick="exportToPDF()" title="Exportar a PDF">PDF</button>
+            <button class="action-btn clear-btn" onclick="clearChat()" title="Limpiar chat">Limpiar</button>
+        </div>
+    </div>
+
+    <script>
+        // Configuración
+        let apiKey = 'AIzaSyA166DZ6xLWIScCxP5j0kN_OHrnRgUBCZk';
+        let model = 'gemini-2.5-flash';
+        let recognition, isListening = false;
+        let currentUtterance = null;
+        let isConnected = false;
+
+        // Cargar cambios
+        const savedKey = localStorage.getItem('geminiApiKey');
+        const savedModel = localStorage.getItem('geminiModel');
+        if (savedKey) apiKey = savedKey;
+        if (savedModel) model = savedModel;
+
+        // Voz
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.lang = 'es-CO';
+            recognition.interimResults = false;
+            recognition.onresult = e => {
+                document.getElementById('userInput').value = e.results[0][0].transcript;
+                sendMessage();
+            };
+            recognition.onerror = () => stopListening();
+            recognition.onend = () => stopListening();
+        }
+
+        window.onload = () => {
+            document.getElementById('apiKeyInput').value = apiKey;
+            document.getElementById('modelInput').value = model;
+            hideApiSection();
+            checkConnection();
+        };
+
+        async function checkConnection() {
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: "ping" }] }] })
+                });
+                isConnected = res.ok;
+            } catch { isConnected = false; }
+            document.getElementById('connectionStatus').classList.toggle('connected', isConnected);
+        }
+
+        function showApiSettings() {
+            document.getElementById('apiSection').style.display = 'block';
+            document.getElementById('mainApp').style.display = 'none';
+        }
+        function hideApiSection() {
+            document.getElementById('apiSection').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'flex';
+        }
+
+        async function testApiKey() {
+            const key = document.getElementById('apiKeyInput').value.trim() || apiKey;
+            const mdl = document.getElementById('modelInput').value.trim() || model;
+            const result = document.getElementById('testResult');
+            result.style.display = 'block';
+            result.textContent = 'Conectando...';
+            result.className = 'test-result';
+
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${mdl}:generateContent?key=${key}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: "Hola" }] }] })
+                });
+                const data = await res.json();
+
+                if (res.ok && data.candidates?.[0]?.content?.parts?.[0]?.text) {
+                    result.textContent = `ÉXITO\nModelo: ${mdl}\n"${data.candidates[0].content.parts[0].text.trim()}"`;
+                    result.className = 'test-result success';
+                } else {
+                    result.textContent = `ERROR: ${data.error?.message || 'Sin respuesta'}`;
+                    result.className += ' error';
+                }
+            } catch (err) {
+                result.textContent = `ERROR DE RED\n${err.message}`;
+                result.className += ' error';
+            }
+        }
+
+        function saveApiKey() {
+            const key = document.getElementById('apiKeyInput').value.trim();
+            const mdl = document.getElementById('modelInput').value.trim();
+            if (!key || !mdl) return alert('Completa clave y modelo');
+            localStorage.setItem('geminiApiKey', key);
+            localStorage.setItem('geminiModel', mdl);
+            apiKey = key; model = mdl;
+            hideApiSection();
+            speak('Configuración guardada.');
+            checkConnection();
+        }
+        function resetApiKey() {
+            localStorage.removeItem('geminiApiKey');
+            localStorage.removeItem('geminiModel');
+            apiKey = 'AIzaSyA166DZ6xLWIScCxP5j0kN_OHrnRgUBCZk';
+            model = 'gemini-2.5-flash';
+            document.getElementById('apiKeyInput').value = apiKey;
+            document.getElementById('modelInput').value = model;
+            speak('Restablecido.');
+            checkConnection();
+        }
+
+        function getGradoText() {
+            const [num, nivel] = document.getElementById('gradoSelect').value.split('-');
+            return `${num}° de ${nivel === 'primaria' ? 'Primaria' : 'Secundaria'}`;
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('userInput');
+            const msg = input.value.trim();
+            if (!msg) return;
+            addMessage(msg, 'user'); input.value = '';
+
+            const prompt = `Eres un profesor de Ciencias Sociales para ${getGradoText()} en Colombia. Responde en español, claro, corto, con emojis y una pregunta final. Tema: ${msg}`;
+
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+                const data = await res.json();
+                const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No pude responder.';
+                addMessage(reply, 'ai');
+                speak(reply);
+            } catch (e) {
+                addMessage('Error de conexión. Pulsa Configuración.', 'ai');
+            }
+        }
+
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.innerHTML = text.replace(/\n/g, '<br>');
+            document.getElementById('chatContainer').appendChild(div);
+            div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function speak(text) {
+            if (currentUtterance) currentUtterance.onend = null;
+            currentUtterance = new SpeechSynthesisUtterance(text);
+            currentUtterance.lang = 'es-CO';
+            currentUtterance.rate = 0.9;
+            speechSynthesis.speak(currentUtterance);
+        }
+
+        function stopSpeaking() {
+            if (speechSynthesis.speaking) {
+                speechSynthesis.cancel();
+                addMessage('<i>Sonido detenido.</i>', 'ai');
+            }
+        }
+
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            let y = 25;
+            const pageHeight = doc.internal.pageSize.height;
+
+            doc.setFontSize(18);
+            doc.text("Consulta - Asistente de Ciencias Sociales", 105, y, { align: 'center' });
+            y += 12;
+            doc.setFontSize(11);
+            doc.text(`Grado: ${getGradoText()} | ${new Date().toLocaleString()}`, 20, y);
+            y += 15;
+
+            document.querySelectorAll('#chatContainer .message').forEach(msg => {
+                const sender = msg.classList.contains('user-message') ? 'Estudiante' : 'Asistente';
+                const text = msg.innerText || msg.textContent;
+                const lines = doc.splitTextToSize(`${sender}: ${text}`, 170);
+                if (y + lines.length * 6 > pageHeight - 20) {
+                    doc.addPage();
+                    y = 20;
+                }
+                doc.text(lines, 20, y);
+                y += lines.length * 6 + 4;
+            });
+
+            doc.save(`consulta_${new Date().toISOString().slice(0,10)}.pdf`);
+            addMessage('<i>PDF exportado.</i>', 'ai');
+        }
+
+        function clearChat() {
+            if (confirm('¿Limpiar toda la conversación?')) {
+                document.getElementById('chatContainer').innerHTML = '';
+                addMessage('<i>Chat limpiado.</i>', 'ai');
+            }
+        }
+
+        function toggleListening() {
+            isListening ? stopListening() : startListening();
+        }
+        function startListening() {
+            const btn = document.getElementById('micBtn');
+            btn.classList.add('listening'); btn.innerHTML = 'Grabando';
+            isListening = true; recognition.start();
+        }
+        function stopListening() {
+            const btn = document.getElementById('micBtn');
+            btn.classList.remove('listening'); btn.innerHTML = 'Micrófono';
+            isListening = false;
+        }
+
+        function toggleFullscreen() {
+            document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+        }
+
+        document.getElementById('userInput').addEventListener('keypress', e => e.key === 'Enter' && sendMessage());
+        document.getElementById('gradoSelect').addEventListener('change', () => speak('Grado: ' + getGradoText()));
+    </script>
+</body>
+</html>
