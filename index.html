@@ -1,560 +1,897 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-    <title>Asistente Docente de Ciencias Sociales</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <style>
-        :root {
-            --primary: #3498db;
-            --primary-dark: #2980b9;
-            --success: #27ae60;
-            --danger: #e74c3c;
-            --warning: #f39c12;
-            --light: #ecf0f1;
-            --dark: #2c3e50;
-            --bg-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --radius: 16px;
-            --shadow: 0 4px 20px rgba(0,0,0,0.1);
-            --transition: all 0.3s ease;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--bg-gradient);
-            color: var(--dark);
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            touch-action: manipulation;
-        }
-        header {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 1rem;
-            text-align: center;
-            box-shadow: var(--shadow);
-            position: relative;
-            z-index: 10;
-            backdrop-filter: blur(10px);
-        }
-        h1 {
-            font-size: clamp(1.4rem, 4vw, 2rem);
-            color: var(--dark);
-            margin-bottom: 0.3rem;
-            font-weight: 600;
-        }
-        header p {
-            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
-            color: #7f8c8d;
-        }
-        .connection-status {
-            position: absolute;
-            top: 1rem;
-            left: 1rem;
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: var(--danger);
-            box-shadow: 0 0 10px var(--danger);
-            transition: var(--transition);
-        }
-        .connected { background: var(--success); box-shadow: 0 0 10px var(--success); }
-        .header-btns {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            display: flex;
-            gap: 0.5rem;
-        }
-        .header-btn {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 1.2rem;
-            transition: var(--transition);
-            box-shadow: var(--shadow);
-        }
-        .fullscreen-btn { background: rgba(0,0,0,0.5); color: white; }
-        .settings-btn { background: rgba(255,255,255,0.9); color: var(--dark); }
-        .header-btn:hover { transform: scale(1.05); }
-        .header-btn:active { transform: scale(0.95); }
-
-        /* Sección API (oculta) */
-        .api-key-section {
-            background: white;
-            padding: 1.5rem;
-            margin: 1rem;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            text-align: center;
-            display: none;
-        }
-        .api-key-section h2 { font-size: 1.3rem; margin-bottom: 0.8rem; color: var(--dark); }
-        .api-key-section p { font-size: 0.9rem; color: #7f8c8d; margin-bottom: 1rem; }
-        .api-key-section label { display: block; text-align: left; margin: 0.8rem 10% 0.3rem; font-weight: 600; font-size: 0.95rem; }
-        .api-key-section input {
-            width: 80%;
-            padding: 0.9rem;
-            font-size: 1rem;
-            border: 2px solid #bdc3c7;
-            border-radius: 12px;
-            transition: var(--transition);
-        }
-        .api-key-section input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2); }
-        .api-key-section .btn-group {
-            display: flex;
-            gap: 0.5rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin: 1rem 0;
-        }
-        .test-result {
-            margin-top: 0.8rem;
-            padding: 0.8rem;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            white-space: pre-line;
-            max-height: 120px;
-            overflow-y: auto;
-            display: none;
-        }
-        .success { background: #d5f5e3; color: var(--success); }
-        .error { background: #fadbd8; color: var(--danger); }
-
-        /* App principal */
-        .main-app {
-            display: none;
-            flex: 1;
-            flex-direction: column;
-            padding: 1rem;
-            overflow: hidden;
-            gap: 1rem;
-        }
-        .grado-selector {
-            background: white;
-            padding: 1rem;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            text-align: center;
-        }
-        .grado-selector label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            font-size: 1rem;
-            color: var(--dark);
-        }
-        .grado-selector select {
-            width: 100%;
-            max-width: 320px;
-            padding: 0.9rem;
-            font-size: 1rem;
-            border: 2px solid #bdc3c7;
-            border-radius: 12px;
-            background: white;
-            transition: var(--transition);
-        }
-        .grado-selector select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
-        }
-
-        .chat-container {
-            flex: 1;
-            background: rgba(255,255,255,0.95);
-            border-radius: var(--radius);
-            padding: 1rem;
-            overflow-y: auto;
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-            gap: 0.8rem;
-        }
-        .message {
-            max-width: 82%;
-            padding: 1rem 1.2rem;
-            border-radius: 18px;
-            word-wrap: break-word;
-            font-size: 1rem;
-            line-height: 1.5;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            animation: fadeIn 0.3s ease;
-        }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .user-message {
-            background: var(--primary);
-            color: white;
-            align-self: flex-end;
-            border-bottom-right-radius: 4px;
-        }
-        .ai-message {
-            background: var(--light);
-            color: var(--dark);
-            align-self: flex-start;
-            border-bottom-left-radius: 4px;
-        }
-
-        .input-area {
-            display: flex;
-            gap: 0.6rem;
-            align-items: center;
-            background: white;
-            padding: 0.8rem;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-        }
-        #userInput {
-            flex: 1;
-            padding: 1rem;
-            font-size: 1.05rem;
-            border: 2px solid #bdc3c7;
-            border-radius: 12px;
-            transition: var(--transition);
-        }
-        #userInput:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
-        }
-        .action-btn {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 1.4rem;
-            transition: var(--transition);
-            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
-        }
-        .mic-btn { background: var(--danger); color: white; }
-        .send-btn { background: var(--success); color: white; }
-        .stop-btn { background: #9b59b6; color: white; }
-        .pdf-btn { background: #f1c40f; color: white; }
-        .clear-btn { background: #e67e22; color: white; }
-        .action-btn:hover { transform: scale(1.08); }
-        .action-btn:active { transform: scale(0.95); }
-        .listening {
-            background: var(--warning) !important;
-            animation: pulse 1.5s infinite;
-        }
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(243, 156, 18, 0.7); }
-            70% { box-shadow: 0 0 0 12px rgba(243, 156, 18, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(243, 156, 18, 0); }
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .input-area { flex-wrap: wrap; }
-            .action-btn { width: 50px; height: 50px; font-size: 1.2rem; }
-            .chat-container { padding: 0.8rem; }
-            .message { font-size: 0.95rem; padding: 0.9rem; }
-        }
-        @media (max-width: 480px) {
-            header { padding: 0.8rem; }
-            .header-btns { gap: 0.3rem; }
-            .header-btn { width: 42px; height: 42px; font-size: 1rem; }
-            .grado-selector select { font-size: 0.95rem; }
-            .input-area { padding: 0.6rem; gap: 0.4rem; }
-            #userInput { font-size: 1rem; padding: 0.8rem; }
-        }
-        @media (orientation: landscape) and (max-height: 600px) {
-            .grado-selector { padding: 0.6rem; }
-            .chat-container { padding: 0.6rem; }
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Interpretador de Análisis de Suelos</title>
+  <style>
+    :root{
+      /* Paleta agricultura & zootecnia (verdes, tierra, cielo) */
+      --bg:#0b1f14;           /* fondo bosque */
+      --card:#0f2518;         /* tarjeta verde oscura */
+      --muted:#9fb8a8;        /* texto secundario verdoso */
+      --text:#e9f5ec;         /* texto principal claro */
+      --accent:#86efac;       /* acento hoja */
+      --ok:#2f855a;           /* verde agrónomo */
+      --warn:#d97706;         /* ámbar cosecha */
+      --bad:#b91c1c;          /* rojo arcilla */
+      --mid:#3b82f6;          /* azul cielo (neutral) */
+      --border:#17331f;       /* borde verde oscuro */
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Arial,"Noto Sans",sans-serif;background:linear-gradient(160deg,#07130a,var(--bg) 35%,#0a2012);color:var(--text)}
+    header{position:sticky;top:0;background:rgba(11,31,20,.78);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);z-index:10}
+    .wrap{max-width:1200px;margin:auto;padding:16px}
+    h1{margin:0;font-size:clamp(1.2rem,2.5vw,1.8rem);letter-spacing:.2px;display:flex;gap:.6rem;align-items:center}
+    h1 .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 14px var(--accent)}
+    main{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;padding:18px}
+    @media (max-width:980px){main{grid-template-columns:1fr}}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.00));border:1px solid var(--border);border-radius:16px;padding:16px}
+    .card h2{margin:.2rem 0 1rem;font-size:1.05rem;color:#fff}
+    label{display:block;margin:.55rem 0 .25rem;color:var(--muted);font-size:.9rem}
+    input[type=number],input[type=text],textarea,select{width:100%;padding:10px 12px;border-radius:10px;background:#0f1c14;color:#e5f3ea;border:1px solid #1e2b1b;outline:none;transition:border-color .2s, box-shadow .2s}
+    input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{margin:0}
+    .grid{display:grid;gap:10px}
+    .g2{grid-template-columns:repeat(2,1fr)}
+    .g3{grid-template-columns:repeat(3,1fr)}
+    @media (max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .btn{border:1px solid #1e2b1b;background:#0f1c14;color:#e5f3ea;padding:10px 12px;border-radius:10px;cursor:pointer}
+    .btn.primary{background:linear-gradient(135deg,#16a34a,#22c55e);border:none;color:#052e18;font-weight:600}
+    .btn.ghost{background:transparent}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
+    .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;border:1px solid #233b2b;font-size:.85rem}
+    .pill.ok{background:rgba(47,133,90,.12);border-color:rgba(47,133,90,.35)}
+    .pill.warn{background:rgba(217,119,6,.12);border-color:rgba(217,119,6,.35)}
+    .pill.bad{background:rgba(185,28,28,.12);border-color:rgba(185,28,28,.35)}
+    .pill.mid{background:rgba(59,130,246,.12);border-color:rgba(59,130,246,.35)}
+    .dot-sm{width:8px;height:8px;border-radius:50%}
+    .ok .dot-sm{background:var(--ok)}
+    .warn .dot-sm{background:var(--warn)}
+    .bad .dot-sm{background:var(--bad)}
+    .mid .dot-sm{background:var(--mid)}
+    .result{border-top:1px dashed #203524;padding-top:12px;margin-top:10px}
+    .result h3{margin:.4rem 0 .3rem}
+    .msg{font-size:.92rem;color:#d7e7dd}
+    details{border:1px dashed #2c3e2e;padding:12px;border-radius:12px;background:rgba(10,26,17,.3)}
+    details[open]{background:rgba(10,26,17,.45)}
+    details summary{cursor:pointer;font-weight:600;margin:.2rem 0}
+    footer{opacity:.9;text-align:center;padding:18px;color:#a9c5b5;font-size:.9rem}
+    .kbd{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;background:#0f1c14;border:1px solid #1d3725;padding:2px 6px;border-radius:6px}
+    .hr{height:1px;background:linear-gradient(90deg,transparent,#2a3f2d,transparent);margin:12px 0}
+    .note{font-size:.85rem;color:#9fb8a8}
+    .tag{border:1px solid #2a3f2d;background:#0f1c14;border-radius:8px;padding:4px 8px;font-size:.8rem;color:#cfe7da}
+    .callout{border-left:3px solid var(--accent);padding:.6rem .8rem;background:rgba(134,239,172,.08);border-radius:10px}
+    .t-pass{color:#86efac}
+    .t-fail{color:#f4a9a9}
+    .mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono"}
+    .status{font-size:.85rem;opacity:.9}
+    .status.ok{color:var(--ok)}
+    .status.err{color:var(--bad)}
+    /* Estado de campos (colores acordes a agro) */
+    input.is-ok, select.is-ok, textarea.is-ok{border-color:rgba(47,133,90,.85); box-shadow:0 0 0 3px rgba(47,133,90,.18) inset}
+    input.is-err, select.is-err, textarea.is-err{border-color:rgba(185,28,28,.85); box-shadow:0 0 0 3px rgba(185,28,28,.15) inset}
+    .input-wrap{display:flex;gap:8px;align-items:center}
+    .btn.sm{padding:8px 10px;font-size:.85rem}
+  </style>
 </head>
 <body>
-    <header>
-        <div class="connection-status" id="connectionStatus"></div>
-        <h3>Yesenia Muñoz Ruiz - UNAD 2025</h3>
-        <h1>Asistente Docente de Ciencias Sociales</h1>
-        <p>Tu profesor virtual para Primaria y Secundaria</p>
-        <div class="header-btns">
-            <button class="header-btn fullscreen-btn" onclick="toggleFullscreen()" title="Pantalla completa">Pantalla Completa</button>
-            <button class="header-btn settings-btn" onclick="showApiSettings()" title="Configuración">Configuración</button>
-        </div>
-    </header>
-
-    <!-- Configuración API (oculta) -->
-    <div class="api-key-section" id="apiSection">
-        <h2>Configuración de API Key</h2>
-        <p>Clave y modelo preconfigurados. Usa "Probar" si hay problemas.</p>
-        
-        <label for="apiKeyInput">API Key:</label>
-        <input type="password" id="apiKeyInput" value="AIzaSyA166DZ6xLWIScCxP5j0kN_OHrnRgUBCZk">
-
-        <label for="modelInput">Modelo:</label>
-        <input type="text" id="modelInput" value="gemini-2.5-flash">
-
-        <div class="btn-group">
-            <button onclick="testApiKey()">Probar</button>
-            <button onclick="saveApiKey()">Guardar</button>
-            <button onclick="resetApiKey()">Restablecer</button>
-        </div>
-
-        <div id="testResult" class="test-result"></div>
+  <header>
+    <div class="wrap">
+      <h1><span class="dot"></span> ** SOY TU ASISTENTE AGRÍCOLA ** Interpretador de Análisis de Suelos <span class="tag">Beta</span></h1>
     </div>
-
-    <!-- Aplicación principal -->
-    <div class="main-app" id="mainApp">
-        <div class="grado-selector">
-            <label for="gradoSelect">Selecciona tu grado:</label>
-            <select id="gradoSelect">
-                <option value="1-primaria">1° de Primaria</option>
-                <option value="2-primaria">2° de Primaria</option>
-                <option value="3-primaria">3° de Primaria</option>
-                <option value="4-primaria">4° de Primaria</option>
-                <option value="5-primaria">5° de Primaria</option>
-                <option value="6-secundaria">6° de Secundaria</option>
-                <option value="7-secundaria">7° de Secundaria</option>
-                <option value="8-secundaria">8° de Secundaria</option>
-                <option value="9-secundaria">9° de Secundaria</option>
-                <option value="10-secundaria">10° de Secundaria</option>
-                <option value="11-secundaria">11° de Secundaria</option>
-            </select>
-        </div>
-
-        <div class="chat-container" id="chatContainer">
-            <div class="message ai-message">
-                <strong>¡Hola!</strong> Selecciona tu grado y pregúntame sobre Historia, Geografía o Ciudadanía. ¡Puedo escucharte!
-            </div>
-        </div>
-
-        <div class="input-area">
-            <input type="text" id="userInput" placeholder="Escribe o habla tu pregunta...">
-            <button class="action-btn mic-btn" id="micBtn" onclick="toggleListening()" title="Hablar">Micrófono</button>
-            <button class="action-btn send-btn" onclick="sendMessage()" title="Enviar">Enviar</button>
-            <button class="action-btn stop-btn" onclick="stopSpeaking()" title="Detener sonido">Sonido</button>
-            <button class="action-btn pdf-btn" onclick="exportToPDF()" title="Exportar a PDF">PDF</button>
-            <button class="action-btn clear-btn" onclick="clearChat()" title="Limpiar chat">Limpiar</button>
-        </div>
+  </header>
+  <div class="wrap">
+    <div class="callout" style="margin:14px 0">
+      Esta app te ayuda a <strong>interpretar</strong> resultados típicos de laboratorio (rangos generales). Los umbrales pueden variar por cultivo, extracción y región. Úsala como <em>guía técnica</em> y valida con tu agrónomo.
     </div>
+  </div>
+  <main class="wrap">
+    <!-- FORMULARIO -->
+    <section class="card" aria-labelledby="form-title">
+      <h2 id="form-title">1) Ingresar resultados del laboratorio</h2>
+      <div class="grid g3">
+        <div>
+          <label for="ph">pH (suelo 1:1)</label>
+          <input type="number" id="ph" step="0.01" min="0" placeholder="ej. 5.8">
+        </div>
+        <div>
+          <label for="ec">Conductividad eléctrica (dS/m)</label>
+          <input type="number" id="ec" step="0.01" min="0" placeholder="ej. 1.2">
+        </div>
+        <div>
+          <label for="om">Materia orgánica (%)</label>
+          <input type="number" id="om" step="0.1" min="0" placeholder="ej. 2.5">
+        </div>
+      </div>
 
-    <script>
-        // Configuración
-        let apiKey = 'AIzaSyA166DZ6xLWIScCxP5j0kN_OHrnRgUBCZk';
-        let model = 'gemini-2.5-flash';
-        let recognition, isListening = false;
-        let currentUtterance = null;
-        let isConnected = false;
+      <div class="grid g3">
+        <div>
+          <label for="n">Nitrógeno (N) disponible (mg/kg, nitrato)</label>
+          <input type="number" id="n" step="0.1" min="0" placeholder="ej. 20">
+        </div>
+        <div>
+          <label for="p">Fósforo (P) disponible (mg/kg)</label>
+          <input type="number" id="p" step="0.1" min="0" placeholder="ej. 18">
+        </div>
+        <div>
+          <label for="k">Potasio (K) intercambiable (mg/kg)</label>
+          <input type="number" id="k" step="1" min="0" placeholder="ej. 120">
+        </div>
+      </div>
 
-        // Cargar cambios
-        const savedKey = localStorage.getItem('geminiApiKey');
-        const savedModel = localStorage.getItem('geminiModel');
-        if (savedKey) apiKey = savedKey;
-        if (savedModel) model = savedModel;
+      <div class="grid g3">
+        <div>
+          <label for="s">Azufre (S) sulfatos (mg/kg)</label>
+          <input type="number" id="s" step="0.1" min="0" placeholder="ej. 8">
+        </div>
+        <div>
+          <label for="cec">CEC (cmol<sup>+</sup>/kg)</label>
+          <input type="number" id="cec" step="0.1" min="0" placeholder="ej. 12">
+        </div>
+        <div>
+          <label for="texture">Textura (opcional)</label>
+          <select id="texture">
+            <option value="">Seleccionar…</option>
+            <option>Arenosa</option>
+            <option>Franca</option>
+            <option>Franco-arcillosa</option>
+            <option>Arcillosa</option>
+          </select>
+        </div>
+      </div>
 
-        // Voz
-        if ('webkitSpeechRecognition' in window) {
-            recognition = new webkitSpeechRecognition();
-            recognition.lang = 'es-CO';
-            recognition.interimResults = false;
-            recognition.onresult = e => {
-                document.getElementById('userInput').value = e.results[0][0].transcript;
-                sendMessage();
-            };
-            recognition.onerror = () => stopListening();
-            recognition.onend = () => stopListening();
+      <div class="grid g3">
+        <div>
+          <label for="ca">Calcio (Ca) (cmol<sup>+</sup>/kg)</label>
+          <input type="number" id="ca" step="0.1" min="0" placeholder="ej. 6">
+        </div>
+        <div>
+          <label for="mg">Magnesio (Mg) (cmol<sup>+</sup>/kg)</label>
+          <input type="number" id="mg" step="0.1" min="0" placeholder="ej. 2">
+        </div>
+        <div>
+          <label for="na">Sodio (Na) (cmol<sup>+</sup>/kg) (opcional)</label>
+          <input type="number" id="na" step="0.1" min="0" placeholder="ej. 0.5">
+        </div>
+      </div>
+
+      <div class="grid g3">
+        <div>
+          <label for="fe">Hierro (Fe) DTPA (mg/kg)</label>
+          <input type="number" id="fe" step="0.1" min="0" placeholder="ej. 6">
+        </div>
+        <div>
+          <label for="zn">Zinc (Zn) DTPA (mg/kg)</label>
+          <input type="number" id="zn" step="0.01" min="0" placeholder="ej. 0.7">
+        </div>
+        <div>
+          <label for="mn">Manganeso (Mn) DTPA (mg/kg)</label>
+          <input type="number" id="mn" step="0.1" min="0" placeholder="ej. 12">
+        </div>
+      </div>
+
+      <div class="grid g3">
+        <div>
+          <label for="cu">Cobre (Cu) DTPA (mg/kg)</label>
+          <input type="number" id="cu" step="0.01" min="0" placeholder="ej. 0.3">
+        </div>
+        <div>
+          <label for="b">Boro (B) caliente-agua (mg/kg)</label>
+          <input type="number" id="b" step="0.01" min="0" placeholder="ej. 0.7">
+        </div>
+        <div>
+          <label for="crop">Cultivo (opcional, texto libre)</label>
+          <input type="text" id="crop" placeholder="ej. Maíz, café, pastos…">
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:12px">
+        <button class="btn primary" id="btnRun" type="button">Interpretar</button>
+        <button class="btn" id="btnDemo" type="button">Cargar ejemplo</button>
+        <button class="btn ghost" id="btnClear" type="button">Limpiar</button>
+        <button class="btn" id="btnSave" type="button" title="Guardar en este navegador">Guardar</button>
+        <button class="btn" id="btnLoad" type="button" title="Cargar guardado">Cargar</button>
+        <button class="btn" id="btnPrint" type="button" title="Imprimir/Guardar PDF">Exportar PDF</button>
+        <span id="saveStatus" class="status"></span>
+        <span id="pdfStatus" class="status"></span>
+      </div>
+      <p class="note">Unidades esperadas: P, K, S y micronutrientes en mg/kg (ppm); CEC, Ca, Mg y Na en cmol<sup>+</sup>/kg; pH en unidad; CE en dS/m; MO en %.</p>
+
+      <div class="hr"></div>
+
+      <details>
+        <summary>📌 Recomendaciones para tomar <strong>muestras de suelo</strong> (mostrar/ocultar)</summary>
+        <ul>
+          <li>Definir lotes homogéneos por pendiente, manejo y textura. Evitar mezclar áreas con historial distinto.</li>
+          <li>Tomar 15–20 submuestras por lote en zigzag, a la <strong>profundidad</strong> de interés (0–20 cm para la mayoría de cultivos; 20–40 cm si se requiere perfil).</li>
+          <li>Usar barreno, pala o calador limpio. Evitar contaminación con fertilizantes, cal, óxidos o sudor.</li>
+          <li>Retirar hojarasca superficial antes de muestrear. Colocar las submuestras en un balde <em>limpio</em> y mezclar.</li>
+          <li>Componer una muestra de ~0,5–1 kg, <strong>rotular</strong> (lote, fecha, cultivo) y secar a la sombra si no se envía de inmediato.</li>
+          <li>Si hay encharcamientos, caminos, bebederos o bordes, evitarlos; muestrear a >5 m de cercas y canales.</li>
+          <li>Repetir el muestreo cada 6–12 meses o antes de la siembra/establecimiento.</li>
+        </ul>
+        <p class="note">Para diagnósticos de salinidad/sodicidad, incluir submuestras profundas y solicitar RAS/SAR, PSI y yeso si aplica.</p>
+      </details>
+    </section>
+
+    <!-- RESULTADOS -->
+    <section class="card" aria-labelledby="res-title">
+      <h2 id="res-title">2) Resultados e interpretación</h2>
+      <div id="results">
+        <p class="note">Ingresa datos y presiona <strong>Interpretar</strong>.</p>
+      </div>
+      <div class="hr"></div>
+      <h2>Gráficos en tiempo real</h2>
+      <div id="charts"><canvas id="nutrientChart" style="width:100%; max-height:300px;"></canvas></div>
+      <div class="hr"></div>
+      <h2 style="margin-top:0.6rem">3) IA – Ampliar información</h2>
+      <label for="apiKey">API Key de aistudio.google.com (Gemini)</label>
+      <div class="input-wrap">
+        <input id="apiKey" type="password" placeholder="Pega tu API Key (se usa solo localmente)">
+        <button class="btn sm" id="btnToggleKey" type="button" aria-pressed="false" aria-label="Mostrar API Key">Mostrar</button>
+      </div>
+      <div class="row" id="keyActions">
+        <button class="btn" id="btnSaveKey" type="button" title="Guardar en este navegador">Guardar API Key</button>
+        <button class="btn" id="btnTestKey" type="button" title="Probar la API Key contra Google AI Studio">Probar API Key</button>
+        <span class="note" id="keyStatus"></span>
+      </div>
+      <label for="modelSel">Modelo (AI Studio)</label>
+      <select id="modelSel">
+        <option value="gemini-1.5-flash-latest">gemini-1.5-flash-latest</option>
+        <option value="gemini-1.5-flash">gemini-1.5-flash</option>
+        <option value="gemini-1.5-pro-latest">gemini-1.5-pro-latest</option>
+      </select>
+      <label for="aiQ">Pregunta o tema a ampliar</label>
+      <textarea id="aiQ" rows="4" placeholder="Ej.: Recomendaciones de fertilización para maíz con P bajo y pH 5.4 en suelo franco."></textarea>
+      <div style="margin:.2rem 0 .6rem">
+        <label><input type="checkbox" id="ctx"> Incluir un resumen de mis resultados como contexto</label>
+      </div>
+      <div class="row">
+        <button class="btn primary" id="btnAskAI" type="button">Consultar IA</button>
+        <span class="note">La app intentará <span class="kbd">v1</span> y si corresponde <span class="kbd">v1beta</span> automáticamente.</span>
+      </div>
+      <div id="aiOut" class="result" style="display:none"></div>
+    </section>
+  </main>
+
+  <div class="wrap">
+    <section class="card">
+      <h2>Notas técnicas y límites de referencia</h2>
+      <ul class="note">
+        <li><strong>pH (suelo):</strong> &lt;5.5 muy ácido; 5.5–6.0 ácido; 6.0–6.5 ligeramente ácido; 6.5–7.3 neutro; 7.4–7.8 ligeramente alcalino; &gt;7.8 alcalino.</li>
+        <li><strong>CE (dS/m):</strong> &lt;2 no salino; 2–4 ligero; 4–8 moderado; &gt;8 severo.</li>
+        <li><strong>MO (%):</strong> &lt;2 baja; 2–4 media; &gt;4 alta (rangos generales, suelos tropicales pueden ser más bajos).</li>
+        <li><strong>P (mg/kg):</strong> &lt;10 muy bajo; 10–20 bajo; 20–40 medio; &gt;40 alto (método Bray/Olsen típico).</li>
+        <li><strong>K (mg/kg):</strong> &lt;80 bajo; 80–150 medio; &gt;150 alto (extr. acetato amonio, referencia general).</li>
+        <li><strong>N (mg/kg, NO₃⁻‑N):</strong> &lt;10 muy bajo; 10–25 bajo; 25–50 medio; &gt;50 alto (muy variable estacionalmente).</li>
+        <li><strong>S (mg/kg):</strong> &lt;5 bajo; 5–10 marginal; &gt;10 adecuado.</li>
+        <li><strong>CEC (cmol<sup>+</sup>/kg):</strong> &lt;6 baja; 6–12 media; 12–25 alta; &gt;25 muy alta.</li>
+        <li><strong>Fe (mg/kg DTPA):</strong> &lt;4 bajo; 4–7 marginal; &gt;7 adecuado.</li>
+        <li><strong>Zn (mg/kg DTPA):</strong> &lt;0.5 bajo; 0.5–1 marginal; &gt;1 adecuado.</li>
+        <li><strong>Mn (mg/kg DTPA):</strong> &lt;5 bajo; 5–10 marginal; &gt;10 adecuado.</li>
+        <li><strong>Cu (mg/kg DTPA):</strong> &lt;0.2 bajo; 0.2–0.5 marginal; &gt;0.5 adecuado.</li>
+        <li><strong>B (mg/kg):</strong> &lt;0.5 bajo; 0.5–1.5 adecuado; &gt;2 riesgo de toxicidad (cultivos sensibles).</li>
+      </ul>
+      <p class="note">Ajusta criterios según cultivo, método analítico y textura. Para recomendaciones de dosis, combina con metas de rendimiento y análisis foliar.</p>
+    </section>
+  </div>
+
+  <div class="wrap">
+    <section class="card" aria-labelledby="qa-title">
+      <h2 id="qa-title">Pruebas automáticas (QA)</h2>
+      <p class="note">Estas pruebas ayudan a detectar errores comunes en el DOM y en la lógica.</p>
+      <div class="row">
+        <button class="btn" id="btnRunTests" type="button">Ejecutar pruebas</button>
+        <span class="note" id="testStatus"></span>
+      </div>
+      <pre id="testLog" class="mono" style="white-space:pre-wrap;background:#0f1c14;border:1px solid #1d3725;border-radius:10px;padding:10px;max-height:220px;overflow:auto"></pre>
+    </section>
+  </div>
+
+  <footer>
+    Yesenia Muñoz Ruiz **UNAD 2025** Hecho con ❤ para productores y estudiantes. — Uso educativo. Validar en campo.
+  </footer>
+
+  <script>
+    const el = (id)=>document.getElementById(id);
+
+    const levels = {
+      ok:{cls:'ok', label:'Adecuado'},
+      mid:{cls:'mid', label:'Medio'},
+      warn:{cls:'warn', label:'Bajo/Marginal'},
+      bad:{cls:'bad', label:'Crítico'}
+    };
+
+    function pill(level, text){
+      return `<span class="pill ${level.cls}"><span class="dot-sm"></span>${text}</span>`;
+    }
+
+    function parseNum(v){
+      const n = parseFloat(String(v).replace(",","."));
+      return Number.isFinite(n) ? n : null;
+    }
+
+    // --- Categorizaciones generales ---
+    function catPH(v){
+      if(v==null) return null;
+      if(v < 5.5) return {lvl:levels.bad, msg:'Muy ácido: posible toxicidad de Al/Mn y baja disponibilidad de P, Ca, Mg.'};
+      if(v < 6.0) return {lvl:levels.warn, msg:'Ácido: mejorar con encalado si el cultivo lo requiere.'};
+      if(v < 6.5) return {lvl:levels.mid, msg:'Ligeramente ácido: bueno para la mayoría; monitorear P.'};
+      if(v <= 7.3) return {lvl:levels.ok, msg:'Neutral: máxima disponibilidad general de nutrientes.'};
+      if(v <= 7.8) return {lvl:levels.mid, msg:'Ligeramente alcalino: vigilar P, Zn, Fe.'};
+      return {lvl:levels.warn, msg:'Alcalino: riesgo de deficiencias de micronutrientes (Fe, Zn, Mn).'};
+    }
+    function catEC(v){
+      if(v==null) return null;
+      if(v < 2) return {lvl:levels.ok, msg:'No salino.'};
+      if(v < 4) return {lvl:levels.mid, msg:'Salinidad ligera: monitorear riego y drenaje.'};
+      if(v < 8) return {lvl:levels.warn, msg:'Salinidad moderada: considerar lavado y manejo de sales.'};
+      return {lvl:levels.bad, msg:'Salinidad severa: requiere intervención (drenaje, lavado, yeso si hay sodio).'};
+    }
+    function catOM(v){
+      if(v==null) return null;
+      if(v < 2) return {lvl:levels.warn, msg:'MO baja: incorporar residuos/abonos orgánicos y cultivos de cobertura.'};
+      if(v <= 4) return {lvl:levels.mid, msg:'MO media: mantener aportes y evitar labranza intensiva.'};
+      return {lvl:levels.ok, msg:'MO alta: buena retención y actividad biológica.'};
+    }
+    function catP(v){
+      if(v==null) return null;
+      if(v < 10) return {lvl:levels.bad, msg:'P muy bajo: aplicar fuentes fosfatadas, posible encalado en suelos ácidos.'};
+      if(v < 20) return {lvl:levels.warn, msg:'P bajo: fertilizar según meta de rendimiento.'};
+      if(v <= 40) return {lvl:levels.mid, msg:'P medio: mantenimiento.'};
+      return {lvl:levels.ok, msg:'P alto: ajustar a mantenimiento; evitar excesos.'};
+    }
+    function catK(v){
+      if(v==null) return null;
+      if(v < 80) return {lvl:levels.warn, msg:'K bajo: requerirá fertilización potásica.'};
+      if(v <= 150) return {lvl:levels.mid, msg:'K medio: dosis de mantenimiento.'};
+      return {lvl:levels.ok, msg:'K alto: mantener, evitar lixiviación en suelos arenosos.'};
+    }
+    function catN(v){
+      if(v==null) return null;
+      if(v < 10) return {lvl:levels.bad, msg:'N muy bajo: planificar programa de N fraccionado.'};
+      if(v < 25) return {lvl:levels.warn, msg:'N bajo: aplicar y fraccionar según cultivo.'};
+      if(v <= 50) return {lvl:levels.mid, msg:'N medio: mantenimiento; considerar mineralización de MO.'};
+      return {lvl:levels.ok, msg:'N alto: riesgo de pérdidas, ajustar dosis.'};
+    }
+    function catS(v){
+      if(v==null) return null;
+      if(v < 5) return {lvl:levels.warn, msg:'S bajo: considerar yeso/fuentes sulfatadas (ej. sulfato de amonio/potasio).'};
+      if(v <= 10) return {lvl:levels.mid, msg:'S marginal: monitorear; aportes orgánicos ayudan.'};
+      return {lvl:levels.ok, msg:'S adecuado.'};
+    }
+    function catCEC(v){
+      if(v==null) return null;
+      if(v < 6) return {lvl:levels.warn, msg:'CEC baja: poca reserva; fraccionar fertilización y usar MO.'};
+      if(v <= 12) return {lvl:levels.mid, msg:'CEC media: manejo estándar, evitar pérdidas.'};
+      if(v <= 25) return {lvl:levels.ok, msg:'CEC alta: buena retención.'};
+      return {lvl:levels.ok, msg:'CEC muy alta: gran capacidad de intercambio; vigilar fijación de P en arcillas reactivas.'};
+    }
+    function catFe(v){
+      if(v==null) return null;
+      if(v < 4) return {lvl:levels.warn, msg:'Fe bajo: clorosis en pH alto; quelatos si es necesario.'};
+      if(v <= 7) return {lvl:levels.mid, msg:'Fe marginal: monitoreo visual y foliar.'};
+      return {lvl:levels.ok, msg:'Fe adecuado.'};
+    }
+    function catZn(v){
+      if(v==null) return null;
+      if(v < 0.5) return {lvl:levels.warn, msg:'Zn bajo: aplicar granular/foliar, sensible en maíz/arroces.'};
+      if(v <= 1.0) return {lvl:levels.mid, msg:'Zn marginal: monitorear.'};
+      return {lvl:levels.ok, msg:'Zn adecuado.'};
+    }
+    function catMn(v){
+      if(v==null) return null;
+      if(v < 5) return {lvl:levels.warn, msg:'Mn bajo: más probable en pH alto; aplicaciones foliares si hay síntomas.'};
+      if(v <= 10) return {lvl:levels.mid, msg:'Mn marginal: vigilar pH.'};
+      return {lvl:levels.ok, msg:'Mn adecuado.'};
+    }
+    function catCu(v){
+      if(v==null) return null;
+      if(v < 0.2) return {lvl:levels.warn, msg:'Cu bajo: raro pero importante en orgánicos/arenosos; foliar si síntomas.'};
+      if(v <= 0.5) return {lvl:levels.mid, msg:'Cu marginal: monitorear.'};
+      return {lvl:levels.ok, msg:'Cu adecuado.'};
+    }
+    function catB(v){
+      if(v==null) return null;
+      if(v < 0.5) return {lvl:levels.warn, msg:'B bajo: cuidado con sobredosificación; aplicar con precisión.'};
+      if(v <= 1.5) return {lvl:levels.ok, msg:'B adecuado (atención a cultivos sensibles).'};
+      if(v <= 2.0) return {lvl:levels.mid, msg:'B alto: riesgo en sensibles; evitar acumulación.'};
+      return {lvl:levels.bad, msg:'B muy alto: riesgo de toxicidad; evitar aportes.'};
+    }
+
+    function collectFormData(){
+      const get = id => (el(id) ? el(id).value : '');
+      return {
+        ph:get('ph'), ec:get('ec'), om:get('om'), n:get('n'), p:get('p'), k:get('k'), s:get('s'), cec:get('cec'), texture:get('texture'),
+        ca:get('ca'), mg:get('mg'), na:get('na'), fe:get('fe'), zn:get('zn'), mn:get('mn'), cu:get('cu'), b:get('b'), crop:get('crop')
+      };
+    }
+
+    function buildInterpretation(){
+      const safeVal = id => (el(id) ? el(id).value : '');
+      const vals = {
+        ph: parseNum(safeVal('ph')),
+        ec: parseNum(safeVal('ec')),
+        om: parseNum(safeVal('om')),
+        n: parseNum(safeVal('n')),
+        p: parseNum(safeVal('p')),
+        k: parseNum(safeVal('k')),
+        s: parseNum(safeVal('s')),
+        cec: parseNum(safeVal('cec')),
+        texture: safeVal('texture') || null,
+        ca: parseNum(safeVal('ca')),
+        mg: parseNum(safeVal('mg')),
+        na: parseNum(safeVal('na')),
+        fe: parseNum(safeVal('fe')),
+        zn: parseNum(safeVal('zn')),
+        mn: parseNum(safeVal('mn')),
+        cu: parseNum(safeVal('cu')),
+        b: parseNum(safeVal('b')),
+        crop: safeVal('crop') || null
+      };
+
+      const blocks = [];
+      function addBlock(title, cat, val, unit){
+        if(!cat) return;
+        const px = pill(cat.lvl, cat.lvl.label);
+        const vtxt = (val!=null? `${val} ${unit||''}` : 's/d');
+        blocks.push(`
+          <div class="result">
+            <h3>${title} ${px}</h3>
+            <div class="msg">Valor: <span class="kbd">${vtxt}</span></div>
+            <div class="msg">${cat.msg}</div>
+          </div>
+        `);
+      }
+
+      addBlock('pH', catPH(vals.ph), vals.ph, 'u');
+      addBlock('Conductividad eléctrica (CE)', catEC(vals.ec), vals.ec, 'dS/m');
+      addBlock('Materia orgánica (MO)', catOM(vals.om), vals.om, '%');
+      addBlock('Nitrógeno disponible (N, NO₃⁻‑N)', catN(vals.n), vals.n, 'mg/kg');
+      addBlock('Fósforo disponible (P)', catP(vals.p), vals.p, 'mg/kg');
+      addBlock('Potasio intercambiable (K)', catK(vals.k), vals.k, 'mg/kg');
+      addBlock('Azufre (S) sulfatos', catS(vals.s), vals.s, 'mg/kg');
+      addBlock('CEC', catCEC(vals.cec), vals.cec, 'cmol⁺/kg');
+      addBlock('Hierro (Fe) DTPA', catFe(vals.fe), vals.fe, 'mg/kg');
+      addBlock('Zinc (Zn) DTPA', catZn(vals.zn), vals.zn, 'mg/kg');
+      addBlock('Manganeso (Mn) DTPA', catMn(vals.mn), vals.mn, 'mg/kg');
+      addBlock('Cobre (Cu) DTPA', catCu(vals.cu), vals.cu, 'mg/kg');
+      addBlock('Boro (B)', catB(vals.b), vals.b, 'mg/kg');
+
+      // Relaciones y diagnósticos especiales
+      const extra = [];
+      if(vals.ca!=null && vals.mg!=null && vals.mg>0){
+        const ratio = (vals.ca/vals.mg).toFixed(2);
+        extra.push(`Relación Ca:Mg = <span class="kbd">${ratio}</span> (óptimo típico 3:1 a 7:1).`);
+      }
+      if(vals.na!=null && vals.ec!=null && vals.na>1 && vals.ec>=2){
+        extra.push('Sodio y salinidad presentes: evaluar RAS/SAR y posible uso de yeso + lavado.');
+      }
+      if(vals.texture){
+        extra.push(`Textura declarada: <span class="kbd">${vals.texture}</span>. Adapta dosis (arenosas: fraccionar más; arcillosas: cuidado fijación P).`);
+      }
+      if(vals.crop){
+        extra.push(`Cultivo de interés: <span class="kbd">${vals.crop}</span>. Ajusta con curvas específicas y metas de rendimiento.`);
+      }
+
+      // Reglas para sugerencias generales
+      const sug = [];
+      if(vals.ph!=null && vals.ph<5.8) sug.push('Considerar <strong>encalado</strong> (CaCO₃/Cal dolomítica) según acidez y textura.');
+      if(vals.ph!=null && vals.ph>7.8) sug.push('Evitar encalar; preferir <strong>fuentes acidificantes</strong> localizadas y quelatos de micronutrientes.');
+      if(vals.p!=null && vals.p<20) sug.push('Aplicar <strong>P</strong> a la siembra, localizado; combinar con MO para reducir fijación.');
+      if(vals.k!=null && vals.k<80) sug.push('Planificar <strong>K</strong> (ej. KCl/K₂SO₄) fraccionado en suelos de CEC baja.');
+      if(vals.n!=null && vals.n<25) sug.push('Programar <strong>N</strong> fraccionado (emergencia/crecimiento/floración) y considerar inhibidores.');
+      if(vals.om!=null && vals.om<2) sug.push('Incrementar <strong>MO</strong>: abonos verdes, coberturas, compost y menos labranza.');
+      if(vals.ec!=null && vals.ec>=4) sug.push('Manejar <strong>salinidad</strong>: drenaje, lavado con buena calidad de agua; monitoreo CE de riego.');
+      if(vals.b!=null && vals.b>2) sug.push('Riesgo de <strong>toxicidad por B</strong>: evitar aportes y mejorar lixiviación si el cultivo es sensible.');
+
+      const out = [];
+      if(blocks.length){ out.push(blocks.join('\n')); }
+
+      if(extra.length){
+        out.push(`<div class="result"><h3>Observaciones</h3><div class="msg">• ${extra.join('<br>• ')}</div></div>`);
+      }
+      if(sug.length){
+        out.push(`<div class="result"><h3>Recomendaciones generales</h3><div class="msg">• ${sug.join('<br>• ')}</div></div>`);
+      }
+
+      if(!blocks.length && !extra.length){
+        el('results').innerHTML = '<p class="note">Ingresa datos y presiona <strong>Interpretar</strong>.</p>';
+      } else {
+        el('results').innerHTML = out.join('');
+      }
+
+      drawNutrientChart(vals);
+
+      return {vals, text: el('results').innerText.trim()};
+    }
+
+    function drawNutrientChart(vals) {
+      const cats = {
+        ph: catPH(vals.ph),
+        ec: catEC(vals.ec),
+        om: catOM(vals.om),
+        n: catN(vals.n),
+        p: catP(vals.p),
+        k: catK(vals.k),
+        s: catS(vals.s),
+        cec: catCEC(vals.cec),
+        fe: catFe(vals.fe),
+        zn: catZn(vals.zn),
+        mn: catMn(vals.mn),
+        cu: catCu(vals.cu),
+        b: catB(vals.b),
+      };
+      const filtered = Object.entries(cats).filter(([k, v]) => v != null);
+      if (!filtered.length) {
+        const canvas = el('nutrientChart');
+        if (canvas) {
+          const ctx = canvas.getContext('2d');
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
+        return;
+      }
+      const labels = filtered.map(([k]) => k.toUpperCase());
+      const scores = filtered.map(([k, v]) => {
+        if (v.lvl === levels.ok) return 100;
+        if (v.lvl === levels.mid) return 75;
+        if (v.lvl === levels.warn) return 50;
+        if (v.lvl === levels.bad) return 25;
+      });
+      const colors = filtered.map(([k, v]) => getComputedStyle(document.documentElement).getPropertyValue(`--${v.lvl.cls}`));
+      const canvas = el('nutrientChart');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = 300;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const num = filtered.length;
+      const barW = canvas.width / num - 10;
+      const gap = 10;
+      filtered.forEach((_, i) => {
+        const x = i * (barW + gap) + gap / 2;
+        const bh = (scores[i] / 100) * (canvas.height - 40);
+        ctx.fillStyle = colors[i];
+        ctx.fillRect(x, canvas.height - bh - 20, barW, bh);
+        ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text');
+        ctx.font = '12px system-ui';
+        ctx.textAlign = 'center';
+        ctx.fillText(labels[i], x + barW / 2, canvas.height - 5);
+        ctx.fillText(scores[i] + '%', x + barW / 2, canvas.height - bh - 25);
+      });
+      ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--muted');
+      ctx.beginPath();
+      ctx.moveTo(0, canvas.height - 20);
+      ctx.lineTo(canvas.width, canvas.height - 20);
+      ctx.stroke();
+    }
 
-        window.onload = () => {
-            document.getElementById('apiKeyInput').value = apiKey;
-            document.getElementById('modelInput').value = model;
-            hideApiSection();
-            checkConnection();
-        };
+    // ---- Persistencia (guardar/cargar) ----
+    const LS_DATA = 'soilapp.data';
+    function setSaveStatus(msg, ok=true){ const s=el('saveStatus'); if(!s) return; s.textContent=msg; s.className = 'status '+(ok?'ok':'err'); }
+    function setPdfStatus(msg, ok=true){ const s=el('pdfStatus'); if(!s) return; s.textContent=msg; s.className = 'status '+(ok?'ok':'err'); }
 
-        async function checkConnection() {
-            try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: "ping" }] }] })
-                });
-                isConnected = res.ok;
-            } catch { isConnected = false; }
-            document.getElementById('connectionStatus').classList.toggle('connected', isConnected);
+    function saveForm(){
+      const data = collectFormData();
+      try{
+        localStorage.setItem(LS_DATA, JSON.stringify(data));
+        setSaveStatus('Datos guardados localmente.');
+      }catch(e){
+        setSaveStatus('No se pudo guardar en este navegador.', false);
+      }
+    }
+    function loadForm(){
+      try{
+        const raw = localStorage.getItem(LS_DATA);
+        if(!raw){ setSaveStatus('No hay datos guardados aún.', false); return; }
+        const data = JSON.parse(raw);
+        Object.entries(data).forEach(([k,v])=>{ if(el(k)) el(k).value = v; });
+        setSaveStatus('Datos cargados.');
+        buildInterpretation();
+      }catch(e){
+        setSaveStatus('Error al cargar.', false);
+      }
+    }
+
+    function makePrintableHTML(){
+      const when = new Date().toLocaleString();
+      const data = collectFormData();
+      // Asegura que los resultados estén actualizados en el reporte
+      const { text } = buildInterpretation();
+      const rows = Object.entries(data).map(([k,v])=>`<tr><td>${k}</td><td>${(v||'').toString().replace(/</g,'&lt;')}</td></tr>`).join('');
+      const resHTML = el('results')?.innerHTML || '';
+      const aiHTML = (el('aiOut')?.innerHTML || '').trim();
+      const aiSection = aiHTML ? `<div class="section">\n          <h2>IA – Análisis y recomendaciones</h2>\n          ${aiHTML}\n        </div>` : '';
+      return `<!doctype html><html><head><meta charset="utf-8"><title>Reporte análisis de suelos</title>
+        <style>
+          body{font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;color:#0b1320;margin:24px}
+          h1{font-size:20px;margin:0 0 8px}
+          .meta{color:#374151;font-size:12px;margin-bottom:14px}
+          table{border-collapse:collapse;width:100%;font-size:12px;margin:12px 0}
+          td,th{border:1px solid #c7ced9;padding:6px 8px}
+          .section{margin:14px 0}
+          .note{font-size:12px;color:#374151}
+          ul{margin:8px 0 8px 18px}
+          .msg{font-size:14px;color:#111827}
+          @media print{.no-print{display:none}}
+        </style>
+      </head><body>
+        <h1>Interpretador de Análisis de Suelos — Reporte</h1>
+        <div class="meta">Generado: ${when}</div>
+        <div class="section">
+          <h2>Datos ingresados</h2>
+          <table><thead><tr><th>Parámetro</th><th>Valor</th></tr></thead><tbody>${rows}</tbody></table>
+        </div>
+        <div class="section">
+          <h2>Resultados e interpretación</h2>
+          ${resHTML}
+        </div>
+        ${aiSection}
+        <p class="note">Uso educativo. Ajustar según cultivo/método analítico/localidad.</p>
+      </body></html>`;
+    }
+
+    function exportPDF(){
+      setPdfStatus('Preparando documento…');
+      try{
+        const html = makePrintableHTML();
+        let win = null;
+        try { win = window.open('', '_blank', 'noopener,noreferrer'); } catch(_) {}
+        if(!win){
+          setPdfStatus('El navegador bloqueó la ventana de impresión. Descargando HTML…', false);
+          downloadHTMLFile(html, 'reporte-analisis-suelos.html');
+          return;
         }
+        win.document.open();
+        win.document.write(html);
+        win.document.close();
+        try { win.focus(); } catch(_) {}
+        setTimeout(()=>{
+          try { win.print(); setPdfStatus('Abierto diálogo de impresión.'); }
+          catch(e){ setPdfStatus('No se pudo abrir la impresión automática. Usa Ctrl/Cmd+P en la nueva pestaña.', false); }
+        }, 250);
+      }catch(e){
+        setPdfStatus('Error preparando el PDF. Descargando HTML…', false);
+        try{ const html = makePrintableHTML(); downloadHTMLFile(html, 'reporte-analisis-suelos.html'); }catch(_){}
+      }
+    }
 
-        function showApiSettings() {
-            document.getElementById('apiSection').style.display = 'block';
-            document.getElementById('mainApp').style.display = 'none';
+    function downloadHTMLFile(html, filename){
+      try{
+        const blob = new Blob([html], {type:'text/html'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = filename || 'documento.html';
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(()=> URL.revokeObjectURL(url), 500);
+      }catch(e){ setPdfStatus('No fue posible descargar el archivo HTML.', false); }
+    }
+
+    // --- Botones ---
+    el('btnRun')?.addEventListener('click', (e)=>{ e.preventDefault(); buildInterpretation(); });
+    el('btnDemo')?.addEventListener('click', ()=>{ const demo = {ph:5.6, ec:3.8, om:1.8, n:18, p:12, k:70, s:6, cec:8, texture:'Franca', ca:6, mg:2, na:0.6, fe:5.5, zn:0.45, mn:9, cu:0.25, b:0.9, crop:'Maíz'}; Object.entries(demo).forEach(([k,v])=>{ if(el(k)) el(k).value = v; }); buildInterpretation(); });
+    function clearForm(preserveKey=true){
+      const keep = preserveKey ? (el('apiKey')?.value||'') : '';
+      document.querySelectorAll('input, textarea, select').forEach(x=>{
+        if(preserveKey && x.id==='apiKey') return;
+        if(x.type==='checkbox') x.checked=false; else x.value='';
+      });
+      if(preserveKey && el('apiKey')) el('apiKey').value = keep;
+      el('results').innerHTML = '<p class="note">Ingresa datos y presiona <strong>Interpretar</strong>.</p>';
+      el('aiOut').style.display='none';
+      el('aiOut').innerHTML='';
+      setSaveStatus('');
+      setPdfStatus('');
+      el('apiKey')?.classList.remove('is-ok','is-err');
+      el('aiQ')?.classList.remove('is-ok','is-err');
+      drawNutrientChart({});
+    }
+    el('btnClear')?.addEventListener('click', ()=> clearForm(true));
+    el('btnSave')?.addEventListener('click', saveForm);
+    el('btnLoad')?.addEventListener('click', loadForm);
+    el('btnPrint')?.addEventListener('click', exportPDF);
+
+    // --- IA Gemini (con fallback v1/v1beta y ajuste de colores de campo) ---
+    const LS_KEY = 'soilapp.geminiKey';
+    let MODELS_CACHE = [];
+
+    function markFieldOK(id){ const x = el(id); if(!x) return; x.classList.remove('is-err'); x.classList.add('is-ok'); }
+    function markFieldERR(id){ const x = el(id); if(!x) return; x.classList.remove('is-ok'); x.classList.add('is-err'); }
+
+    function getKey(){ const direct = el('apiKey') ? (el('apiKey').value||'').trim() : ''; return direct || localStorage.getItem(LS_KEY) || ''; }
+    function setKeyStatus(msg, ok=true){ const ks = el('keyStatus'); if(!ks) return; ks.textContent = msg; ks.style.color = ok ? 'var(--ok)' : 'var(--bad)'; }
+    function loadSavedKey(){ const k = localStorage.getItem(LS_KEY); if(k && el('apiKey')){ el('apiKey').value = k; setKeyStatus('API Key cargada de este navegador.'); } }
+    function sanitizeModelName(name){ return (name||'').replace(/^models\//,''); }
+
+    async function fetchModels(key){
+      for(const v of ['v1','v1beta']){
+        const url = `https://generativelanguage.googleapis.com/${v}/models?key=${encodeURIComponent(key)}`;
+        const res = await fetch(url, {headers:{'x-goog-api-key': key}});
+        if(res.ok){ return await res.json(); }
+        if(res.status === 404) continue; // probar siguiente versión
+        const t = await res.text(); throw new Error(`${res.status} ${t}`);
+      }
+      throw new Error('404 Lista de modelos no disponible en v1 ni v1beta');
+    }
+
+    function setModelsInSelect(list){
+      MODELS_CACHE = Array.isArray(list)? list : [];
+      const sel = el('modelSel'); if(!sel) return;
+      const wantedOrder = ['gemini-1.5-flash-latest','gemini-1.5-flash','gemini-1.5-pro-latest','gemini-1.5-pro','gemini-1.5-flash-8b'];
+      const names = MODELS_CACHE.map(m=> sanitizeModelName(m.name));
+      const unique = [...new Set(names)];
+      sel.innerHTML = '';
+      unique.sort((a,b)=> (wantedOrder.indexOf(a)+1||999) - (wantedOrder.indexOf(b)+1||999)).forEach(n=>{
+        const opt = document.createElement('option'); opt.value = n; opt.textContent = n; sel.appendChild(opt);
+      });
+      const preferred = wantedOrder.find(x=> unique.includes(x)) || unique[0];
+      if(preferred) sel.value = preferred;
+      if(unique.length){ markFieldOK('modelSel'); }
+    }
+
+    function buildGenUrl(version, model, key){
+      const m = sanitizeModelName(model);
+      return `https://generativelanguage.googleapis.com/${version}/models/${encodeURIComponent(m)}:generateContent?key=${encodeURIComponent(key)}`;
+    }
+
+    async function postGenerate(version, model, key, body){
+      const url = buildGenUrl(version, model, key);
+      return fetch(url, { method:'POST', headers:{'Content-Type':'application/json','x-goog-api-key': key}, body: JSON.stringify(body)});
+    }
+
+    async function generateWithFallback(model, key, body){
+      let lastText = '';
+      const tryVersions = ['v1','v1beta'];
+      const tryModels = (()=>{
+        const names = MODELS_CACHE.map(m=> sanitizeModelName(m.name));
+        const alt = ['gemini-1.5-flash-latest','gemini-1.5-flash','gemini-1.5-pro-latest','gemini-1.5-pro','gemini-1.5-flash-8b'];
+        const pref = [sanitizeModelName(model), ...alt].filter(Boolean);
+        const fromCache = pref.filter(n=> !names.length || names.includes(n));
+        return [...new Set(fromCache)].slice(0,3); // máximo 3 intentos distintos de modelo
+      })();
+
+      for(const m of tryModels){
+        for(const v of tryVersions){
+          const res = await postGenerate(v, m, key, body);
+          if(res.ok){ return await res.json(); }
+          const t = await res.text(); lastText = `${res.status} ${t}`;
+          if(res.status === 404){ continue; } else { throw new Error(lastText); }
         }
-        function hideApiSection() {
-            document.getElementById('apiSection').style.display = 'none';
-            document.getElementById('mainApp').style.display = 'flex';
-        }
+      }
+      throw new Error(lastText || '404 No encontrado en v1 ni v1beta');
+    }
 
-        async function testApiKey() {
-            const key = document.getElementById('apiKeyInput').value.trim() || apiKey;
-            const mdl = document.getElementById('modelInput').value.trim() || model;
-            const result = document.getElementById('testResult');
-            result.style.display = 'block';
-            result.textContent = 'Conectando...';
-            result.className = 'test-result';
+    loadSavedKey();
 
-            try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${mdl}:generateContent?key=${key}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: "Hola" }] }] })
-                });
-                const data = await res.json();
+    el('btnSaveKey')?.addEventListener('click', ()=>{
+      const k = (el('apiKey')?.value||'').trim();
+      if(!k){ markFieldERR('apiKey'); alert('Ingresa una API Key antes de guardar.'); return; }
+      localStorage.setItem(LS_KEY, k);
+      setKeyStatus('API Key guardada localmente.');
+      markFieldOK('apiKey');
+    });
 
-                if (res.ok && data.candidates?.[0]?.content?.parts?.[0]?.text) {
-                    result.textContent = `ÉXITO\nModelo: ${mdl}\n"${data.candidates[0].content.parts[0].text.trim()}"`;
-                    result.className = 'test-result success';
-                } else {
-                    result.textContent = `ERROR: ${data.error?.message || 'Sin respuesta'}`;
-                    result.className += ' error';
-                }
-            } catch (err) {
-                result.textContent = `ERROR DE RED\n${err.message}`;
-                result.className += ' error';
-            }
-        }
+    el('btnTestKey')?.addEventListener('click', async()=>{
+      const k = getKey();
+      if(!k){ markFieldERR('apiKey'); alert('Ingresa o guarda tu API Key primero.'); return; }
+      setKeyStatus('Probando API Key…');
+      try{
+        const data = await fetchModels(k);
+        const models = Array.isArray(data.models)? data.models : [];
+        setModelsInSelect(models);
+        setKeyStatus(`Key válida ✓ (modelos: ${models.length})`, true);
+        markFieldOK('apiKey');
+      }catch(e){ setKeyStatus(`Key inválida ✗ ${e.message}`, false); markFieldERR('apiKey'); }
+    });
 
-        function saveApiKey() {
-            const key = document.getElementById('apiKeyInput').value.trim();
-            const mdl = document.getElementById('modelInput').value.trim();
-            if (!key || !mdl) return alert('Completa clave y modelo');
-            localStorage.setItem('geminiApiKey', key);
-            localStorage.setItem('geminiModel', mdl);
-            apiKey = key; model = mdl;
-            hideApiSection();
-            speak('Configuración guardada.');
-            checkConnection();
-        }
-        function resetApiKey() {
-            localStorage.removeItem('geminiApiKey');
-            localStorage.removeItem('geminiModel');
-            apiKey = 'AIzaSyA166DZ6xLWIScCxP5j0kN_OHrnRgUBCZk';
-            model = 'gemini-2.5-flash';
-            document.getElementById('apiKeyInput').value = apiKey;
-            document.getElementById('modelInput').value = model;
-            speak('Restablecido.');
-            checkConnection();
-        }
+    el('btnAskAI')?.addEventListener('click', async ()=>{
+      const key = getKey();
+      const qEl = el('aiQ');
+      const q = (qEl?.value||'').trim();
+      const modelSel = el('modelSel');
+      const model = sanitizeModelName(modelSel?.value || 'gemini-1.5-flash-latest');
+      if(!key){ markFieldERR('apiKey'); alert('Pega tu API Key de aistudio.google.com'); return; }
+      markFieldOK('apiKey');
+      if(!q){ markFieldERR('aiQ'); alert('Escribe tu pregunta para la IA'); return; }
+      markFieldOK('aiQ');
 
-        function getGradoText() {
-            const [num, nivel] = document.getElementById('gradoSelect').value.split('-');
-            return `${num}° de ${nivel === 'primaria' ? 'Primaria' : 'Secundaria'}`;
-        }
+      // Si no hay modelos en caché, intenta obtenerlos para evitar 404 por modelo no disponible
+      if(!MODELS_CACHE.length){
+        try { const data = await fetchModels(key); setModelsInSelect(Array.isArray(data.models)? data.models : []);} catch(_){ /* continúa sin frenar */ }
+      }
 
-        async function sendMessage() {
-            const input = document.getElementById('userInput');
-            const msg = input.value.trim();
-            if (!msg) return;
-            addMessage(msg, 'user'); input.value = '';
+      const ctxOn = !!el('ctx')?.checked;
+      let prompt = q;
+      if(ctxOn){
+        const {vals} = buildInterpretation();
+        const ctx = Object.entries(vals)
+          .filter(([k,v])=> v!==null && v!=='' && k!=='texture' && k!=='crop')
+          .map(([k,v])=> `${k.toUpperCase()}: ${v}`).join(', ');
+        prompt = `Actúa como agrónomo. Con estos resultados de suelo (${ctx}) y el cultivo "${vals.crop||'no especificado'}", responde: ${q}. Sé específico, en español, con advertencias de seguridad y supuestos.`;
+      }
 
-            const prompt = `Eres un profesor de Ciencias Sociales para ${getGradoText()} en Colombia. Responde en español, claro, corto, con emojis y una pregunta final. Tema: ${msg}`;
+      const body = { contents: [{ role:'user', parts: [{ text: prompt }]}] };
+      const out = el('aiOut');
+      out.style.display='block';
+      out.innerHTML = '<div class="msg">Consultando IA…</div>';
 
-            try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-                });
-                const data = await res.json();
-                const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No pude responder.';
-                addMessage(reply, 'ai');
-                speak(reply);
-            } catch (e) {
-                addMessage('Error de conexión. Pulsa Configuración.', 'ai');
-            }
-        }
+      try{
+        const data = await generateWithFallback(model, key, body);
+        const parts = (data?.candidates?.[0]?.content?.parts)||[];
+        const txt = parts.map(p=>p.text).filter(Boolean).join('\n') || 'Sin respuesta.';
+        out.innerHTML = `<h3>Respuesta de IA</h3><div class="msg">${mdToHtml(escapeHtml(txt))}</div>`;
+      } catch(err){
+        markFieldERR('apiKey');
+        markFieldERR('modelSel');
+        out.innerHTML = `<div class="msg" style="color:#fca5a5">Error al consultar IA: ${escapeHtml(err.message)}.<br>Consejos: usa <span class="kbd">Probar API Key</span> para refrescar modelos; cambia a un modelo disponible (lista desplegable) y reintenta.</div>`;
+      }
+    });
 
-        function addMessage(text, sender) {
-            const div = document.createElement('div');
-            div.className = `message ${sender}-message`;
-            div.innerHTML = text.replace(/\n/g, '<br>');
-            document.getElementById('chatContainer').appendChild(div);
-            div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
+    // Markdown mínimo → HTML (negritas, listas, saltos)
+    function mdToHtml(s){
+      return s
+        .replace(/^\s*\*\s+(.*)$/gm,'<li>$1</li>')
+        .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+        .replace(/\n\n/g,'</p><p>')
+        .replace(/\n/g,'<br>')
+        .replace(/(<li>.*<\/li>)/gs,'<ul>$1</ul>');
+    }
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g, m=> ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[m]));
+    }
 
-        function speak(text) {
-            if (currentUtterance) currentUtterance.onend = null;
-            currentUtterance = new SpeechSynthesisUtterance(text);
-            currentUtterance.lang = 'es-CO';
-            currentUtterance.rate = 0.9;
-            speechSynthesis.speak(currentUtterance);
-        }
+    function toggleKeyVisibility(){
+      const f = el('apiKey'); const b = el('btnToggleKey');
+      if(!f||!b) return;
+      if(f.type==='password'){ f.type='text'; b.textContent='Ocultar'; b.setAttribute('aria-pressed','true'); }
+      else { f.type='password'; b.textContent='Mostrar'; b.setAttribute('aria-pressed','false'); }
+    }
+    el('btnToggleKey')?.addEventListener('click', toggleKeyVisibility);
 
-        function stopSpeaking() {
-            if (speechSynthesis.speaking) {
-                speechSynthesis.cancel();
-                addMessage('<i>Sonido detenido.</i>', 'ai');
-            }
-        }
+    // --- PRUEBAS ---
+    function log(msg, ok=true){ const logEl = el('testLog'); if(!logEl) return; const line = ok ? `✅ ${msg}` : `❌ ${msg}`; logEl.textContent += (logEl.textContent ? '\n' : '') + line; }
+    function clearLog(){ const logEl = el('testLog'); if(logEl) logEl.textContent=''; }
 
-        function exportToPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            let y = 25;
-            const pageHeight = doc.internal.pageSize.height;
+    function runSelfTests(){
+      clearLog();
+      const ids = ['ph','ec','om','n','p','k','s','cec','texture','ca','mg','na','fe','zn','mn','cu','b','crop','results','aiOut','apiKey','btnToggleKey','btnAskAI','btnSaveKey','btnTestKey','modelSel','btnSave','btnLoad','btnPrint'];
+      let pass = 0, fail = 0;
+      ids.forEach(id=>{ const ok = !!el(id); ok ? pass++ : fail++; log(`Elemento #${id} ${ok?'presente':'faltante'}`, ok); });
+      // Test interpretación
+      try{ const demo = {ph:5.6, ec:3.8, om:1.8, n:18, p:12, k:70, s:6, cec:8, ca:6, mg:2, fe:5.5, zn:0.45, mn:9, cu:0.25, b:0.9}; Object.entries(demo).forEach(([k,v])=>{ if(el(k)) el(k).value = v; }); buildInterpretation(); const txt = el('results')?.innerText || ''; const checks = ['pH','Conductividad eléctrica','Materia orgánica','Fósforo','Potasio','CEC','Zinc']; const okAll = checks.every(c=> txt.includes(c)); log('Interpretación genera bloques esperados', okAll); okAll ? pass++ : fail++; }catch(e){ log('Interpretación lanzó error: '+e.message, false); fail++; }
+      // Test guardar/cargar (localStorage)
+      try{ const sample = {ph:'6.2',p:'25',crop:'Café'}; Object.entries(sample).forEach(([k,v])=>{ if(el(k)) el(k).value=v; }); saveForm(); const raw = localStorage.getItem(LS_DATA); const okSave = !!raw; log('Guardado en localStorage', okSave); okSave ? pass++ : fail++; document.querySelectorAll('input, textarea, select').forEach(x=>{ if(x.type==='checkbox') x.checked=false; else x.value=''; }); loadForm(); const okLoad = (el('ph')?.value==='6.2' && el('p')?.value==='25' && el('crop')?.value==='Café'); log('Carga desde localStorage', okLoad); okLoad ? pass++ : fail++; }catch(e){ log('Guardar/Cargar falló: '+e.message, false); fail++; }
+      // Test preserva API Key al limpiar
+      try{ if(el('apiKey')){ el('apiKey').value='KEY123'; clearForm(true); const okKeep = el('apiKey').value==='KEY123'; log('Limpiar preserva API Key', okKeep); okKeep?pass++:fail++; }}catch(e){ log('Prueba clear preserva key falló: '+e.message, false); fail++; }
+      // Test toggle mostrar/ocultar API Key
+      try{ const f=el('apiKey'), b=el('btnToggleKey'); if(f&&b){ const t0=f.type; toggleKeyVisibility(); const t1=f.type; toggleKeyVisibility(); const okT = (t0==='password' && t1==='text' && f.type==='password'); log('Toggle mostrar/ocultar API Key', okT); okT?pass++:fail++; }}catch(e){ log('Toggle key falló: '+e.message, false); fail++; }
+      // Test generador de HTML imprimible
+      try{ const html = makePrintableHTML(); const okHtml = typeof html === 'string' && html.includes('<table') && html.length > 200; log('Generador de HTML imprimible', okHtml); okHtml ? pass++ : fail++; }catch(e){ log('Generador HTML falló: '+e.message, false); fail++; }
+      // Test HTML imprimible es parseable (sin errores de sintaxis)
+      try{ const html = makePrintableHTML(); const doc = new DOMParser().parseFromString(html, 'text/html'); const noErr = !doc.querySelector('parsererror'); log('HTML imprimible parsea sin errores', noErr); noErr ? pass++ : fail++; }catch(e){ log('Parser de HTML arrojó error: '+e.message, false); fail++; }
+      // Test inclusión de IA en impresión
+      try{ const aiDemo = '<h3>Respuesta de IA</h3><div class="msg">Recomendación demo</div>'; const aiOut = el('aiOut'); if(aiOut){ aiOut.style.display='block'; aiOut.innerHTML = aiDemo; } const html2 = makePrintableHTML(); const okAI = html2.includes('Recomendación demo'); log('Impresión incluye recomendaciones IA si existen', okAI); okAI ? pass++ : fail++; }catch(e){ log('Inclusión IA en reporte falló: '+e.message, false); fail++; }
 
-            doc.setFontSize(18);
-            doc.text("Consulta - Asistente de Ciencias Sociales", 105, y, { align: 'center' });
-            y += 12;
-            doc.setFontSize(11);
-            doc.text(`Grado: ${getGradoText()} | ${new Date().toLocaleString()}`, 20, y);
-            y += 15;
+      const status = el('testStatus'); if(status){ status.textContent = `Pruebas: ${pass} ok / ${fail} fallas`; status.className = fail? 't-fail' : 't-pass'; }
+    }
 
-            document.querySelectorAll('#chatContainer .message').forEach(msg => {
-                const sender = msg.classList.contains('user-message') ? 'Estudiante' : 'Asistente';
-                const text = msg.innerText || msg.textContent;
-                const lines = doc.splitTextToSize(`${sender}: ${text}`, 170);
-                if (y + lines.length * 6 > pageHeight - 20) {
-                    doc.addPage();
-                    y = 20;
-                }
-                doc.text(lines, 20, y);
-                y += lines.length * 6 + 4;
-            });
+    el('btnRunTests')?.addEventListener('click', runSelfTests);
+    // Ejecuta una vez al cargar
+    runSelfTests();
 
-            doc.save(`consulta_${new Date().toISOString().slice(0,10)}.pdf`);
-            addMessage('<i>PDF exportado.</i>', 'ai');
-        }
-
-        function clearChat() {
-            if (confirm('¿Limpiar toda la conversación?')) {
-                document.getElementById('chatContainer').innerHTML = '';
-                addMessage('<i>Chat limpiado.</i>', 'ai');
-            }
-        }
-
-        function toggleListening() {
-            isListening ? stopListening() : startListening();
-        }
-        function startListening() {
-            const btn = document.getElementById('micBtn');
-            btn.classList.add('listening'); btn.innerHTML = 'Grabando';
-            isListening = true; recognition.start();
-        }
-        function stopListening() {
-            const btn = document.getElementById('micBtn');
-            btn.classList.remove('listening'); btn.innerHTML = 'Micrófono';
-            isListening = false;
-        }
-
-        function toggleFullscreen() {
-            document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
-        }
-
-        document.getElementById('userInput').addEventListener('keypress', e => e.key === 'Enter' && sendMessage());
-        document.getElementById('gradoSelect').addEventListener('change', () => speak('Grado: ' + getGradoText()));
-    </script>
+    // --- Gráficos en tiempo real ---
+    function debounce(fn, ms) {
+      let t;
+      return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); }
+    }
+    const debouncedBuild = debounce(buildInterpretation, 300);
+    const inputs = document.querySelectorAll('input[type=number], input[type=text], select');
+    inputs.forEach(inp => {
+      inp.addEventListener('input', debouncedBuild);
+      inp.addEventListener('change', debouncedBuild);
+    });
+  </script>
 </body>
 </html>
