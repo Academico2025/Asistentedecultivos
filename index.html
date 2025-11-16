@@ -207,14 +207,11 @@
   </style>
 </head>
 <body>
-
   <header>
     <div class="wrap">
-       <h1><span class="dot"></span> ** SOY TU ASISTENTE AGRÍCOLA ** <span class="tag">Beta</span></h1>
-      <h2><span class="dot"></span>Interpretador de Análisis de Suelos<span class="tag"></span></h2>
+      <h1><span class="dot"></span> ** SOY TU ASISTENTE AGRÍCOLA ** Interpretador de Análisis de Suelos <span class="tag">Beta</span></h1>
     </div>
   </header>
-
   <div class="wrap">
     <div class="callout" style="margin:14px 0">
       Esta app te ayuda a <strong>interpretar</strong> resultados típicos de laboratorio (rangos generales). Los umbrales pueden variar por cultivo, extracción y región. Úsala como <em>guía técnica</em> y valida con tu agrónomo.
@@ -427,7 +424,7 @@
       <textarea id="aiQ" rows="4" placeholder="Ej.: Recomendaciones de fertilización para maíz con P bajo y pH 5.4 en suelo franco."></textarea>
       <div style="margin:.2rem 0 .6rem">
         <label><input type="checkbox" id="ctx"> Incluir un resumen de los resultados como contexto</label><br>
-        <label><input type="checkbox" id="edu"> Explicar muy bien</label>
+        <label><input type="checkbox" id="edu"> Explicar muy bien los datos</label>
       </div>
       <div class="row">
         <button class="btn primary" id="btnAskAI" type="button">Consultar IA</button>
@@ -945,13 +942,18 @@
       });
     }
 
-    // --- Botones ---
-    el('btnRun')?.addEventListener('click', (e)=>{ e.preventDefault(); buildInterpretation(); });
+    // --- Botones principales ---
+    el('btnRun')?.addEventListener('click', (e)=>{ 
+      e.preventDefault(); 
+      buildInterpretation(); 
+    });
+
     el('btnDemo')?.addEventListener('click', ()=>{ 
       const demo = {ph:5.6, ec:3.8, om:1.8, n:18, p:12, k:70, s:6, cec:8, texture:'Franca', ca:6, mg:2, na:0.6, fe:5.5, zn:0.45, mn:9, cu:0.25, b:0.9, crop:'Maíz'}; 
       Object.entries(demo).forEach(([k,v])=>{ if(el(k)) el(k).value = v; }); 
       buildInterpretation(); 
     });
+
     function clearForm(preserveKey=true){
       const keep = preserveKey ? (el('apiKey')?.value||'') : '';
       document.querySelectorAll('input, textarea, select').forEach(x=>{
@@ -1246,17 +1248,8 @@ Pregunta del usuario: ${q}
     // Ejecuta una vez al cargar
     runSelfTests();
 
-    // --- Gráficos en tiempo real ---
-    function debounce(fn, ms) {
-      let t;
-      return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); }
-    }
-    const debouncedBuild = debounce(buildInterpretation, 300);
-    const inputs = document.querySelectorAll('input[type=number], input[type=text], select');
-    inputs.forEach(inp => {
-      inp.addEventListener('input', debouncedBuild);
-      inp.addEventListener('change', debouncedBuild);
-    });
+    // (Se quitó la lógica de “gráficos en tiempo real” sobre input/change
+    // para que el cálculo ocurra solo cuando se presiona Interpretar.)
   </script>
 </body>
 </html>
