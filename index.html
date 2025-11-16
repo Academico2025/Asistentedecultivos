@@ -20,28 +20,98 @@
     }
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Arial,"Noto Sans",sans-serif;background:linear-gradient(160deg,#07130a,var(--bg) 35%,#0a2012);color:var(--text)}
-    header{position:sticky;top:0;background:rgba(11,31,20,.78);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);z-index:10}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
+      background:linear-gradient(160deg,#07130a,var(--bg) 35%,#0a2012);
+      color:var(--text)
+    }
+    header{
+      position:sticky;
+      top:0;
+      background:rgba(11,31,20,.78);
+      backdrop-filter:blur(10px);
+      border-bottom:1px solid var(--border);
+      z-index:10
+    }
     .wrap{max-width:1200px;margin:auto;padding:16px}
-    h1{margin:0;font-size:clamp(1.2rem,2.5vw,1.8rem);letter-spacing:.2px;display:flex;gap:.6rem;align-items:center}
-    h1 .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 14px var(--accent)}
-    main{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;padding:18px}
+    h1{
+      margin:0;
+      font-size:clamp(1.2rem,2.5vw,1.8rem);
+      letter-spacing:.2px;
+      display:flex;
+      gap:.6rem;
+      align-items:center
+    }
+    h1 .dot{
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:var(--accent);
+      box-shadow:0 0 14px var(--accent)
+    }
+    main{
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+      gap:18px;
+      padding:18px
+    }
     @media (max-width:980px){main{grid-template-columns:1fr}}
-    .card{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.00));border:1px solid var(--border);border-radius:16px;padding:16px}
+    .card{
+      background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.00));
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:16px
+    }
     .card h2{margin:.2rem 0 1rem;font-size:1.05rem;color:#fff}
-    label{display:block;margin:.55rem 0 .25rem;color:var(--muted);font-size:.9rem}
-    input[type=number],input[type=text],textarea,select{width:100%;padding:10px 12px;border-radius:10px;background:#0f1c14;color:#e5f3ea;border:1px solid #1e2b1b;outline:none;transition:border-color .2s, box-shadow .2s}
+    label{
+      display:block;
+      margin:.55rem 0 .25rem;
+      color:var(--muted);
+      font-size:.9rem
+    }
+    input[type=number],input[type=text],textarea,select{
+      width:100%;
+      padding:10px 12px;
+      border-radius:10px;
+      background:#0f1c14;
+      color:#e5f3ea;
+      border:1px solid #1e2b1b;
+      outline:none;
+      transition:border-color .2s, box-shadow .2s
+    }
     input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{margin:0}
     .grid{display:grid;gap:10px}
     .g2{grid-template-columns:repeat(2,1fr)}
     .g3{grid-template-columns:repeat(3,1fr)}
     @media (max-width:760px){.g2,.g3{grid-template-columns:1fr}}
     .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    .btn{border:1px solid #1e2b1b;background:#0f1c14;color:#e5f3ea;padding:10px 12px;border-radius:10px;cursor:pointer}
-    .btn.primary{background:linear-gradient(135deg,#16a34a,#22c55e);border:none;color:#052e18;font-weight:600}
+    .btn{
+      border:1px solid #1e2b1b;
+      background:#0f1c14;
+      color:#e5f3ea;
+      padding:10px 12px;
+      border-radius:10px;
+      cursor:pointer
+    }
+    .btn.primary{
+      background:linear-gradient(135deg,#16a34a,#22c55e);
+      border:none;
+      color:#052e18;
+      font-weight:600
+    }
     .btn.ghost{background:transparent}
     .btn:disabled{opacity:.6;cursor:not-allowed}
-    .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;border:1px solid #233b2b;font-size:.85rem}
+    .btn.sm{padding:6px 10px;font-size:.8rem}
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid #233b2b;
+      font-size:.85rem
+    }
     .pill.ok{background:rgba(47,133,90,.12);border-color:rgba(47,133,90,.35)}
     .pill.warn{background:rgba(217,119,6,.12);border-color:rgba(217,119,6,.35)}
     .pill.bad{background:rgba(185,28,28,.12);border-color:rgba(185,28,28,.35)}
@@ -51,37 +121,100 @@
     .warn .dot-sm{background:var(--warn)}
     .bad .dot-sm{background:var(--bad)}
     .mid .dot-sm{background:var(--mid)}
-    .result{border-top:1px dashed #203524;padding-top:12px;margin-top:10px}
+    .result{
+      border-top:1px dashed #203524;
+      padding-top:12px;
+      margin-top:10px
+    }
     .result h3{margin:.4rem 0 .3rem}
     .msg{font-size:.92rem;color:#d7e7dd}
-    details{border:1px dashed #2c3e2e;padding:12px;border-radius:12px;background:rgba(10,26,17,.3)}
+    details{
+      border:1px dashed #2c3e2e;
+      padding:12px;
+      border-radius:12px;
+      background:rgba(10,26,17,.3)
+    }
     details[open]{background:rgba(10,26,17,.45)}
     details summary{cursor:pointer;font-weight:600;margin:.2rem 0}
-    footer{opacity:.9;text-align:center;padding:18px;color:#a9c5b5;font-size:.9rem}
-    .kbd{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;background:#0f1c14;border:1px solid #1d3725;padding:2px 6px;border-radius:6px}
-    .hr{height:1px;background:linear-gradient(90deg,transparent,#2a3f2d,transparent);margin:12px 0}
+    footer{
+      opacity:.9;
+      text-align:center;
+      padding:18px;
+      color:#a9c5b5;
+      font-size:.9rem
+    }
+    .kbd{
+      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+      background:#0f1c14;
+      border:1px solid #1d3725;
+      padding:2px 6px;
+      border-radius:6px
+    }
+    .hr{
+      height:1px;
+      background:linear-gradient(90deg,transparent,#2a3f2d,transparent);
+      margin:12px 0
+    }
     .note{font-size:.85rem;color:#9fb8a8}
-    .tag{border:1px solid #2a3f2d;background:#0f1c14;border-radius:8px;padding:4px 8px;font-size:.8rem;color:#cfe7da}
-    .callout{border-left:3px solid var(--accent);padding:.6rem .8rem;background:rgba(134,239,172,.08);border-radius:10px}
+    .tag{
+      border:1px solid #2a3f2d;
+      background:#0f1c14;
+      border-radius:8px;
+      padding:4px 8px;
+      font-size:.8rem;
+      color:#cfe7da
+    }
+    .callout{
+      border-left:3px solid var(--accent);
+      padding:.6rem .8rem;
+      background:rgba(134,239,172,.08);
+      border-radius:10px
+    }
     .t-pass{color:#86efac}
     .t-fail{color:#f4a9a9}
-    .mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono"}
+    .mono{
+      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace
+    }
     .status{font-size:.85rem;opacity:.9}
     .status.ok{color:var(--ok)}
     .status.err{color:var(--bad)}
     /* Estado de campos (colores acordes a agro) */
-    input.is-ok, select.is-ok, textarea.is-ok{border-color:rgba(47,133,90,.85); box-shadow:0 0 0 3px rgba(47,133,90,.18) inset}
-    input.is-err, select.is-err, textarea.is-err{border-color:rgba(185,28,28,.85); box-shadow:0 0 0 3px rgba(185,28,28,.15) inset}
+    input.is-ok, select.is-ok, textarea.is-ok{
+      border-color:rgba(47,133,90,.85);
+      box-shadow:0 0 0 3px rgba(47,133,90,.18) inset
+    }
+    input.is-err, select.is-err, textarea.is-err{
+      border-color:rgba(185,28,28,.85);
+      box-shadow:0 0 0 3px rgba(185,28,28,.15) inset
+    }
     .input-wrap{display:flex;gap:8px;align-items:center}
-    .btn.sm{padding:8px 10px;font-size:.85rem}
+    /* Resumen y grupos */
+    .summary-card{
+      border:1px solid #25633a;
+      border-radius:12px;
+      padding:10px 12px;
+      background:rgba(22,163,74,.13);
+      margin-bottom:10px
+    }
+    .summary-card h3{margin:0 0 4px}
+    .group-block{margin-top:8px}
+    .group-title{
+      margin:0.6rem 0 0.2rem;
+      font-size:.98rem;
+      color:#e9f5ec
+    }
+    #resultFilters .btn.sm{padding:4px 10px}
   </style>
 </head>
 <body>
+
   <header>
     <div class="wrap">
-      <h1><span class="dot"></span> ** SOY TU ASISTENTE AGRÍCOLA ** Interpretador de Análisis de Suelos <span class="tag">Beta</span></h1>
+       <h1><span class="dot"></span> ** SOY TU ASISTENTE AGRÍCOLA ** <span class="tag">Beta</span></h1>
+      <h2><span class="dot"></span>Interpretador de Análisis de Suelos<span class="tag"></span></h2>
     </div>
   </header>
+
   <div class="wrap">
     <div class="callout" style="margin:14px 0">
       Esta app te ayuda a <strong>interpretar</strong> resultados típicos de laboratorio (rangos generales). Los umbrales pueden variar por cultivo, extracción y región. Úsala como <em>guía técnica</em> y valida con tu agrónomo.
@@ -93,45 +226,63 @@
       <h2 id="form-title">1) Ingresar resultados del laboratorio</h2>
       <div class="grid g3">
         <div>
-          <label for="ph">pH (suelo 1:1)</label>
+          <label for="ph" title="pH en pasta saturada o mezcla 1:1. Rangos: &lt;5.5 muy ácido, 6–6.5 óptimo general, &gt;7.8 alcalino.">
+            pH (suelo 1:1)
+          </label>
           <input type="number" id="ph" step="0.01" min="0" placeholder="ej. 5.8">
         </div>
         <div>
-          <label for="ec">Conductividad eléctrica (dS/m)</label>
+          <label for="ec" title="Conductividad eléctrica de extracto de saturación, en dS/m. &lt;2 no salino; &gt;4 ya afecta muchos cultivos.">
+            Conductividad eléctrica (dS/m)
+          </label>
           <input type="number" id="ec" step="0.01" min="0" placeholder="ej. 1.2">
         </div>
         <div>
-          <label for="om">Materia orgánica (%)</label>
+          <label for="om" title="Porcentaje de materia orgánica. &lt;2 baja, 2–4 media, &gt;4 alta (referencia general).">
+            Materia orgánica (%)
+          </label>
           <input type="number" id="om" step="0.1" min="0" placeholder="ej. 2.5">
         </div>
       </div>
 
       <div class="grid g3">
         <div>
-          <label for="n">Nitrógeno (N) disponible (mg/kg, nitrato)</label>
+          <label for="n" title="Nitrógeno nítrico disponible (mg/kg). Muy variable en el tiempo, usar solo como indicador de corto plazo.">
+            Nitrógeno (N) disponible (mg/kg, nitrato)
+          </label>
           <input type="number" id="n" step="0.1" min="0" placeholder="ej. 20">
         </div>
         <div>
-          <label for="p">Fósforo (P) disponible (mg/kg)</label>
+          <label for="p" title="Fósforo disponible (Bray/Olsen, mg/kg). &lt;10 muy bajo; 10–20 bajo; 20–40 medio; &gt;40 alto.">
+            Fósforo (P) disponible (mg/kg)
+          </label>
           <input type="number" id="p" step="0.1" min="0" placeholder="ej. 18">
         </div>
         <div>
-          <label for="k">Potasio (K) intercambiable (mg/kg)</label>
+          <label for="k" title="Potasio intercambiable (mg/kg). &lt;80 bajo; 80–150 medio; &gt;150 alto (referencia general).">
+            Potasio (K) intercambiable (mg/kg)
+          </label>
           <input type="number" id="k" step="1" min="0" placeholder="ej. 120">
         </div>
       </div>
 
       <div class="grid g3">
         <div>
-          <label for="s">Azufre (S) sulfatos (mg/kg)</label>
+          <label for="s" title="Azufre como sulfatos disponibles (mg/kg). &lt;5 bajo; 5–10 marginal; &gt;10 adecuado.">
+            Azufre (S) sulfatos (mg/kg)
+          </label>
           <input type="number" id="s" step="0.1" min="0" placeholder="ej. 8">
         </div>
         <div>
-          <label for="cec">CEC (cmol<sup>+</sup>/kg)</label>
+          <label for="cec" title="Capacidad de intercambio catiónico (cmol+/kg). Indica la capacidad de retener cationes y fertilizantes.">
+            CEC (cmol<sup>+</sup>/kg)
+          </label>
           <input type="number" id="cec" step="0.1" min="0" placeholder="ej. 12">
         </div>
         <div>
-          <label for="texture">Textura (opcional)</label>
+          <label for="texture" title="Textura dominante del horizonte muestreado. Afecta dosis, fraccionamiento y riesgo de pérdidas.">
+            Textura (opcional)
+          </label>
           <select id="texture">
             <option value="">Seleccionar…</option>
             <option>Arenosa</option>
@@ -144,45 +295,63 @@
 
       <div class="grid g3">
         <div>
-          <label for="ca">Calcio (Ca) (cmol<sup>+</sup>/kg)</label>
+          <label for="ca" title="Calcio intercambiable (cmol+/kg). Relación con Mg y Na importante para estructura.">
+            Calcio (Ca) (cmol<sup>+</sup>/kg)
+          </label>
           <input type="number" id="ca" step="0.1" min="0" placeholder="ej. 6">
         </div>
         <div>
-          <label for="mg">Magnesio (Mg) (cmol<sup>+</sup>/kg)</label>
+          <label for="mg" title="Magnesio intercambiable (cmol+/kg). Ver relación Ca:Mg y posibles desbalances.">
+            Magnesio (Mg) (cmol<sup>+</sup>/kg)
+          </label>
           <input type="number" id="mg" step="0.1" min="0" placeholder="ej. 2">
         </div>
         <div>
-          <label for="na">Sodio (Na) (cmol<sup>+</sup>/kg) (opcional)</label>
+          <label for="na" title="Sodio intercambiable (cmol+/kg). Importante para riesgo de sodicidad y estructura.">
+            Sodio (Na) (cmol<sup>+</sup>/kg) (opcional)
+          </label>
           <input type="number" id="na" step="0.1" min="0" placeholder="ej. 0.5">
         </div>
       </div>
 
       <div class="grid g3">
         <div>
-          <label for="fe">Hierro (Fe) DTPA (mg/kg)</label>
+          <label for="fe" title="Hierro disponible por DTPA (mg/kg). Puede limitar en suelos calizos o muy alcalinos.">
+            Hierro (Fe) DTPA (mg/kg)
+          </label>
           <input type="number" id="fe" step="0.1" min="0" placeholder="ej. 6">
         </div>
         <div>
-          <label for="zn">Zinc (Zn) DTPA (mg/kg)</label>
+          <label for="zn" title="Zinc DTPA (mg/kg). Clave en maíz, arroz y varios cultivos extensivos.">
+            Zinc (Zn) DTPA (mg/kg)
+          </label>
           <input type="number" id="zn" step="0.01" min="0" placeholder="ej. 0.7">
         </div>
         <div>
-          <label for="mn">Manganeso (Mn) DTPA (mg/kg)</label>
+          <label for="mn" title="Manganeso DTPA (mg/kg). Deficiencias más frecuentes en pH altos.">
+            Manganeso (Mn) DTPA (mg/kg)
+          </label>
           <input type="number" id="mn" step="0.1" min="0" placeholder="ej. 12">
         </div>
       </div>
 
       <div class="grid g3">
         <div>
-          <label for="cu">Cobre (Cu) DTPA (mg/kg)</label>
+          <label for="cu" title="Cobre DTPA (mg/kg). Importante en suelos muy orgánicos o arenosos.">
+            Cobre (Cu) DTPA (mg/kg)
+          </label>
           <input type="number" id="cu" step="0.01" min="0" placeholder="ej. 0.3">
         </div>
         <div>
-          <label for="b">Boro (B) caliente-agua (mg/kg)</label>
+          <label for="b" title="Boro disponible (mg/kg). Margen estrecho entre deficiencia y toxicidad.">
+            Boro (B) caliente-agua (mg/kg)
+          </label>
           <input type="number" id="b" step="0.01" min="0" placeholder="ej. 0.7">
         </div>
         <div>
-          <label for="crop">Cultivo (opcional, texto libre)</label>
+          <label for="crop" title="Nombre del cultivo o pastura objetivo. Ayuda a contextualizar las recomendaciones.">
+            Cultivo (opcional, texto libre)
+          </label>
           <input type="text" id="crop" placeholder="ej. Maíz, café, pastos…">
         </div>
       </div>
@@ -197,7 +366,10 @@
         <span id="saveStatus" class="status"></span>
         <span id="pdfStatus" class="status"></span>
       </div>
-      <p class="note">Unidades esperadas: P, K, S y micronutrientes en mg/kg (ppm); CEC, Ca, Mg y Na en cmol<sup>+</sup>/kg; pH en unidad; CE en dS/m; MO en %.</p>
+      <p class="note">
+        Unidades esperadas: P, K, S y micronutrientes en mg/kg (ppm); CEC, Ca, Mg y Na en cmol<sup>+</sup>/kg; pH en unidad;
+        CE en dS/m; MO en %.
+      </p>
 
       <div class="hr"></div>
 
@@ -209,7 +381,7 @@
           <li>Usar barreno, pala o calador limpio. Evitar contaminación con fertilizantes, cal, óxidos o sudor.</li>
           <li>Retirar hojarasca superficial antes de muestrear. Colocar las submuestras en un balde <em>limpio</em> y mezclar.</li>
           <li>Componer una muestra de ~0,5–1 kg, <strong>rotular</strong> (lote, fecha, cultivo) y secar a la sombra si no se envía de inmediato.</li>
-          <li>Si hay encharcamientos, caminos, bebederos o bordes, evitarlos; muestrear a >5 m de cercas y canales.</li>
+          <li>Si hay encharcamientos, caminos, bebederos o bordes, evitarlos; muestrear a &gt;5 m de cercas y canales.</li>
           <li>Repetir el muestreo cada 6–12 meses o antes de la siembra/establecimiento.</li>
         </ul>
         <p class="note">Para diagnósticos de salinidad/sodicidad, incluir submuestras profundas y solicitar RAS/SAR, PSI y yeso si aplica.</p>
@@ -219,9 +391,17 @@
     <!-- RESULTADOS -->
     <section class="card" aria-labelledby="res-title">
       <h2 id="res-title">2) Resultados e interpretación</h2>
+
+      <div class="row" id="resultFilters">
+        <span class="note">Filtro de vista:</span>
+        <button class="btn sm" type="button" id="fltAll">Ver todo</button>
+        <button class="btn sm" type="button" id="fltIssues">Solo bajos/críticos</button>
+      </div>
+
       <div id="results">
         <p class="note">Ingresa datos y presiona <strong>Interpretar</strong>.</p>
       </div>
+
       <div class="hr"></div>
       <h2>Gráficos en tiempo real</h2>
       <div id="charts"><canvas id="nutrientChart" style="width:100%; max-height:300px;"></canvas></div>
@@ -246,7 +426,8 @@
       <label for="aiQ">Pregunta o tema a ampliar</label>
       <textarea id="aiQ" rows="4" placeholder="Ej.: Recomendaciones de fertilización para maíz con P bajo y pH 5.4 en suelo franco."></textarea>
       <div style="margin:.2rem 0 .6rem">
-        <label><input type="checkbox" id="ctx"> Incluir un resumen de mis resultados como contexto</label>
+        <label><input type="checkbox" id="ctx"> Incluir un resumen de los resultados como contexto</label><br>
+        <label><input type="checkbox" id="edu"> Explicar muy bien</label>
       </div>
       <div class="row">
         <button class="btn primary" id="btnAskAI" type="button">Consultar IA</button>
@@ -265,7 +446,7 @@
         <li><strong>MO (%):</strong> &lt;2 baja; 2–4 media; &gt;4 alta (rangos generales, suelos tropicales pueden ser más bajos).</li>
         <li><strong>P (mg/kg):</strong> &lt;10 muy bajo; 10–20 bajo; 20–40 medio; &gt;40 alto (método Bray/Olsen típico).</li>
         <li><strong>K (mg/kg):</strong> &lt;80 bajo; 80–150 medio; &gt;150 alto (extr. acetato amonio, referencia general).</li>
-        <li><strong>N (mg/kg, NO₃⁻‑N):</strong> &lt;10 muy bajo; 10–25 bajo; 25–50 medio; &gt;50 alto (muy variable estacionalmente).</li>
+        <li><strong>N (mg/kg, NO₃⁻-N):</strong> &lt;10 muy bajo; 10–25 bajo; 25–50 medio; &gt;50 alto (muy variable estacionalmente).</li>
         <li><strong>S (mg/kg):</strong> &lt;5 bajo; 5–10 marginal; &gt;10 adecuado.</li>
         <li><strong>CEC (cmol<sup>+</sup>/kg):</strong> &lt;6 baja; 6–12 media; 12–25 alta; &gt;25 muy alta.</li>
         <li><strong>Fe (mg/kg DTPA):</strong> &lt;4 bajo; 4–7 marginal; &gt;7 adecuado.</li>
@@ -298,10 +479,10 @@
     const el = (id)=>document.getElementById(id);
 
     const levels = {
-      ok:{cls:'ok', label:'Adecuado'},
-      mid:{cls:'mid', label:'Medio'},
-      warn:{cls:'warn', label:'Bajo/Marginal'},
-      bad:{cls:'bad', label:'Crítico'}
+      ok:{cls:'ok', label:'Adecuado ✅'},
+      mid:{cls:'mid', label:'Medio 🟦'},
+      warn:{cls:'warn', label:'Bajo/Marginal ⚠️'},
+      bad:{cls:'bad', label:'Crítico 🚨'}
     };
 
     function pill(level, text){
@@ -309,7 +490,7 @@
     }
 
     function parseNum(v){
-      const n = parseFloat(String(v).replace(",","."));
+      const n = parseFloat(String(v).replace(",",".")); 
       return Number.isFinite(n) ? n : null;
     }
 
@@ -432,33 +613,43 @@
         crop: safeVal('crop') || null
       };
 
-      const blocks = [];
-      function addBlock(title, cat, val, unit){
+      const groups = { general:[], macro:[], micro:[] };
+      const issues = [];
+
+      function addBlock(groupKey, title, cat, val, unit){
         if(!cat) return;
         const px = pill(cat.lvl, cat.lvl.label);
         const vtxt = (val!=null? `${val} ${unit||''}` : 's/d');
-        blocks.push(`
-          <div class="result">
+        const lvlClass = cat.lvl.cls;
+        const html = `
+          <div class="result" data-level="${lvlClass}" data-kind="param">
             <h3>${title} ${px}</h3>
             <div class="msg">Valor: <span class="kbd">${vtxt}</span></div>
             <div class="msg">${cat.msg}</div>
           </div>
-        `);
+        `;
+        groups[groupKey].push(html);
+        if(lvlClass === 'bad' || lvlClass === 'warn'){
+          issues.push({ title, lvl:lvlClass, msg:cat.msg });
+        }
       }
 
-      addBlock('pH', catPH(vals.ph), vals.ph, 'u');
-      addBlock('Conductividad eléctrica (CE)', catEC(vals.ec), vals.ec, 'dS/m');
-      addBlock('Materia orgánica (MO)', catOM(vals.om), vals.om, '%');
-      addBlock('Nitrógeno disponible (N, NO₃⁻‑N)', catN(vals.n), vals.n, 'mg/kg');
-      addBlock('Fósforo disponible (P)', catP(vals.p), vals.p, 'mg/kg');
-      addBlock('Potasio intercambiable (K)', catK(vals.k), vals.k, 'mg/kg');
-      addBlock('Azufre (S) sulfatos', catS(vals.s), vals.s, 'mg/kg');
-      addBlock('CEC', catCEC(vals.cec), vals.cec, 'cmol⁺/kg');
-      addBlock('Hierro (Fe) DTPA', catFe(vals.fe), vals.fe, 'mg/kg');
-      addBlock('Zinc (Zn) DTPA', catZn(vals.zn), vals.zn, 'mg/kg');
-      addBlock('Manganeso (Mn) DTPA', catMn(vals.mn), vals.mn, 'mg/kg');
-      addBlock('Cobre (Cu) DTPA', catCu(vals.cu), vals.cu, 'mg/kg');
-      addBlock('Boro (B)', catB(vals.b), vals.b, 'mg/kg');
+      // Bloques con iconos por tipo
+      addBlock('general','⚗️ pH', catPH(vals.ph), vals.ph, 'u');
+      addBlock('general','💧 Conductividad eléctrica (CE)', catEC(vals.ec), vals.ec, 'dS/m');
+      addBlock('general','🍂 Materia orgánica (MO)', catOM(vals.om), vals.om, '%');
+      addBlock('general','⚗️ CEC', catCEC(vals.cec), vals.cec, 'cmol⁺/kg');
+
+      addBlock('macro','🌾 Nitrógeno disponible (N, NO₃⁻-N)', catN(vals.n), vals.n, 'mg/kg');
+      addBlock('macro','🌾 Fósforo disponible (P)', catP(vals.p), vals.p, 'mg/kg');
+      addBlock('macro','🌾 Potasio intercambiable (K)', catK(vals.k), vals.k, 'mg/kg');
+      addBlock('macro','🌾 Azufre (S) sulfatos', catS(vals.s), vals.s, 'mg/kg');
+
+      addBlock('micro','🔬 Hierro (Fe) DTPA', catFe(vals.fe), vals.fe, 'mg/kg');
+      addBlock('micro','🔬 Zinc (Zn) DTPA', catZn(vals.zn), vals.zn, 'mg/kg');
+      addBlock('micro','🔬 Manganeso (Mn) DTPA', catMn(vals.mn), vals.mn, 'mg/kg');
+      addBlock('micro','🔬 Cobre (Cu) DTPA', catCu(vals.cu), vals.cu, 'mg/kg');
+      addBlock('micro','🔬 Boro (B)', catB(vals.b), vals.b, 'mg/kg');
 
       // Relaciones y diagnósticos especiales
       const extra = [];
@@ -488,22 +679,94 @@
       if(vals.b!=null && vals.b>2) sug.push('Riesgo de <strong>toxicidad por B</strong>: evitar aportes y mejorar lixiviación si el cultivo es sensible.');
 
       const out = [];
-      if(blocks.length){ out.push(blocks.join('\n')); }
+      const hasAnyGroup = groups.general.length || groups.macro.length || groups.micro.length;
+
+      // Semáforo global y resumen
+      if(hasAnyGroup){
+        const badCount = issues.filter(i=>i.lvl==='bad').length;
+        const warnCount = issues.filter(i=>i.lvl==='warn').length;
+
+        let riskLabel = '🟩 Riesgo bajo';
+        let riskDetail = 'La mayoría de parámetros están en rangos adecuados o medios.';
+        if(badCount>0){
+          riskLabel = '🟥 Riesgo alto';
+          riskDetail = `${badCount} parámetro(s) en nivel crítico y ${warnCount} en bajo/marginal.`;
+        } else if(warnCount>0){
+          riskLabel = '🟧 Riesgo medio';
+          riskDetail = `${warnCount} parámetro(s) en nivel bajo/marginal.`;
+        }
+
+        let topLim = 'Ninguno crítico o bajo.';
+        if(issues.length){
+          const sev = {bad:2, warn:1};
+          const sorted = [...issues].sort((a,b)=> sev[b.lvl]-sev[a.lvl]);
+          const names = [...new Set(sorted.map(i=>i.title))].slice(0,3);
+          topLim = names.join(', ');
+        }
+
+        out.push(`
+          <div class="summary-card">
+            <h3>Resumen rápido 🌱</h3>
+            <div class="msg">
+              Estado general del suelo: <strong>${riskLabel}</strong><br>
+              ${riskDetail}<br>
+              Limitantes principales: <strong>${topLim}</strong>
+            </div>
+          </div>
+        `);
+      }
+
+      // Grupos
+      if(groups.general.length){
+        out.push(`
+          <div class="group-block">
+            <h3 class="group-title">Propiedades generales ⚗️</h3>
+            ${groups.general.join('')}
+          </div>
+        `);
+      }
+      if(groups.macro.length){
+        out.push(`
+          <div class="group-block">
+            <h3 class="group-title">Macronutrientes 🌾</h3>
+            ${groups.macro.join('')}
+          </div>
+        `);
+      }
+      if(groups.micro.length){
+        out.push(`
+          <div class="group-block">
+            <h3 class="group-title">Micronutrientes 🔬</h3>
+            ${groups.micro.join('')}
+          </div>
+        `);
+      }
 
       if(extra.length){
-        out.push(`<div class="result"><h3>Observaciones</h3><div class="msg">• ${extra.join('<br>• ')}</div></div>`);
+        out.push(`
+          <div class="result" data-kind="extra">
+            <h3>Observaciones 📝</h3>
+            <div class="msg">• ${extra.join('<br>• ')}</div>
+          </div>
+        `);
       }
       if(sug.length){
-        out.push(`<div class="result"><h3>Recomendaciones generales</h3><div class="msg">• ${sug.join('<br>• ')}</div></div>`);
+        out.push(`
+          <div class="result" data-kind="extra">
+            <h3>Recomendaciones generales 🌱</h3>
+            <div class="msg">• ${sug.join('<br>• ')}</div>
+          </div>
+        `);
       }
 
-      if(!blocks.length && !extra.length){
+      if(!hasAnyGroup && !extra.length){
         el('results').innerHTML = '<p class="note">Ingresa datos y presiona <strong>Interpretar</strong>.</p>';
       } else {
         el('results').innerHTML = out.join('');
       }
 
       drawNutrientChart(vals);
+      applyFilter('all'); // reset filtro después de cada interpretación
 
       return {vals, text: el('results').innerText.trim()};
     }
@@ -577,7 +840,7 @@
       const data = collectFormData();
       try{
         localStorage.setItem(LS_DATA, JSON.stringify(data));
-        setSaveStatus('Datos guardados localmente.');
+        setSaveStatus('Datos guardados localmente. 💾');
       }catch(e){
         setSaveStatus('No se pudo guardar en este navegador.', false);
       }
@@ -588,7 +851,7 @@
         if(!raw){ setSaveStatus('No hay datos guardados aún.', false); return; }
         const data = JSON.parse(raw);
         Object.entries(data).forEach(([k,v])=>{ if(el(k)) el(k).value = v; });
-        setSaveStatus('Datos cargados.');
+        setSaveStatus('Datos cargados. ✅');
         buildInterpretation();
       }catch(e){
         setSaveStatus('Error al cargar.', false);
@@ -649,7 +912,7 @@
         win.document.close();
         try { win.focus(); } catch(_) {}
         setTimeout(()=>{
-          try { win.print(); setPdfStatus('Abierto diálogo de impresión.'); }
+          try { win.print(); setPdfStatus('Abierto diálogo de impresión. 🖨️'); }
           catch(e){ setPdfStatus('No se pudo abrir la impresión automática. Usa Ctrl/Cmd+P en la nueva pestaña.', false); }
         }, 250);
       }catch(e){
@@ -669,9 +932,26 @@
       }catch(e){ setPdfStatus('No fue posible descargar el archivo HTML.', false); }
     }
 
+    // --- Filtro de resultados ---
+    function applyFilter(mode){
+      const nodes = document.querySelectorAll('.result[data-kind="param"]');
+      nodes.forEach(r=>{
+        const lvl = r.getAttribute('data-level') || '';
+        if(mode==='all'){
+          r.style.display = '';
+        }else if(mode==='issues'){
+          r.style.display = (lvl==='bad' || lvl==='warn') ? '' : 'none';
+        }
+      });
+    }
+
     // --- Botones ---
     el('btnRun')?.addEventListener('click', (e)=>{ e.preventDefault(); buildInterpretation(); });
-    el('btnDemo')?.addEventListener('click', ()=>{ const demo = {ph:5.6, ec:3.8, om:1.8, n:18, p:12, k:70, s:6, cec:8, texture:'Franca', ca:6, mg:2, na:0.6, fe:5.5, zn:0.45, mn:9, cu:0.25, b:0.9, crop:'Maíz'}; Object.entries(demo).forEach(([k,v])=>{ if(el(k)) el(k).value = v; }); buildInterpretation(); });
+    el('btnDemo')?.addEventListener('click', ()=>{ 
+      const demo = {ph:5.6, ec:3.8, om:1.8, n:18, p:12, k:70, s:6, cec:8, texture:'Franca', ca:6, mg:2, na:0.6, fe:5.5, zn:0.45, mn:9, cu:0.25, b:0.9, crop:'Maíz'}; 
+      Object.entries(demo).forEach(([k,v])=>{ if(el(k)) el(k).value = v; }); 
+      buildInterpretation(); 
+    });
     function clearForm(preserveKey=true){
       const keep = preserveKey ? (el('apiKey')?.value||'') : '';
       document.querySelectorAll('input, textarea, select').forEach(x=>{
@@ -693,6 +973,9 @@
     el('btnLoad')?.addEventListener('click', loadForm);
     el('btnPrint')?.addEventListener('click', exportPDF);
 
+    el('fltAll')?.addEventListener('click', ()=> applyFilter('all'));
+    el('fltIssues')?.addEventListener('click', ()=> applyFilter('issues'));
+
     // --- IA Gemini (con fallback v1/v1beta y ajuste de colores de campo) ---
     const LS_KEY = 'soilapp.geminiKey';
     let MODELS_CACHE = [];
@@ -702,7 +985,7 @@
 
     function getKey(){ const direct = el('apiKey') ? (el('apiKey').value||'').trim() : ''; return direct || localStorage.getItem(LS_KEY) || ''; }
     function setKeyStatus(msg, ok=true){ const ks = el('keyStatus'); if(!ks) return; ks.textContent = msg; ks.style.color = ok ? 'var(--ok)' : 'var(--bad)'; }
-    function loadSavedKey(){ const k = localStorage.getItem(LS_KEY); if(k && el('apiKey')){ el('apiKey').value = k; setKeyStatus('API Key cargada de este navegador.'); } }
+    function loadSavedKey(){ const k = localStorage.getItem(LS_KEY); if(k && el('apiKey')){ el('apiKey').value = k; setKeyStatus('API Key cargada de este navegador. 🔑'); } }
     function sanitizeModelName(name){ return (name||'').replace(/^models\//,''); }
 
     async function fetchModels(key){
@@ -769,7 +1052,7 @@
       const k = (el('apiKey')?.value||'').trim();
       if(!k){ markFieldERR('apiKey'); alert('Ingresa una API Key antes de guardar.'); return; }
       localStorage.setItem(LS_KEY, k);
-      setKeyStatus('API Key guardada localmente.');
+      setKeyStatus('API Key guardada localmente. 💾');
       markFieldOK('apiKey');
     });
 
@@ -803,25 +1086,49 @@
       }
 
       const ctxOn = !!el('ctx')?.checked;
-      let prompt = q;
-      if(ctxOn){
-        const {vals} = buildInterpretation();
+      const eduOn = !!el('edu')?.checked;
+      let prompt;
+
+      if (ctxOn) {
+        const { vals } = buildInterpretation();
         const ctx = Object.entries(vals)
-          .filter(([k,v])=> v!==null && v!=='' && k!=='texture' && k!=='crop')
-          .map(([k,v])=> `${k.toUpperCase()}: ${v}`).join(', ');
-        prompt = `Actúa como agrónomo. Con estos resultados de suelo (${ctx}) y el cultivo "${vals.crop||'no especificado'}", responde: ${q}. Sé específico, en español, con advertencias de seguridad y supuestos.`;
+          .filter(([k, v]) => v !== null && v !== '' && k !== 'texture' && k !== 'crop')
+          .map(([k, v]) => `${k.toUpperCase()}: ${v}`).join(', ');
+
+        prompt = `
+Actúa como agrónomo especializado en fertilidad de suelos 🌱.
+
+Con estos resultados de suelo (${ctx}) y el cultivo "${vals.crop || 'no especificado'}":
+
+${q}
+
+Responde SIEMPRE en español, con tono claro y práctico.
+Usa viñetas con emojis agrícolas (por ejemplo 🌱, 🌾, ⚠️, 💧, 📌, ✅) para organizar las recomendaciones.
+Incluye advertencias de seguridad, supuestos y, si aplica, recomendaciones de manejo de suelo y fertilización.
+        `.trim();
+      } else {
+        // Sin contexto de resultados, pero igual con emojis
+        prompt = `
+Responde en español, de forma clara y práctica.
+Usa viñetas con emojis agrícolas (🌱, 🌾, ⚠️, 💧, 📌, ✅) para organizar las ideas.
+Pregunta del usuario: ${q}
+        `.trim();
+      }
+
+      if(eduOn){
+        prompt += '\nExplica también el por qué de cada recomendación, como si fuera una clase para estudiantes de agronomía, con ejemplos concretos y advertencias de manejo seguro.';
       }
 
       const body = { contents: [{ role:'user', parts: [{ text: prompt }]}] };
       const out = el('aiOut');
       out.style.display='block';
-      out.innerHTML = '<div class="msg">Consultando IA…</div>';
+      out.innerHTML = '<div class="msg">Consultando IA… 🤖</div>';
 
       try{
         const data = await generateWithFallback(model, key, body);
         const parts = (data?.candidates?.[0]?.content?.parts)||[];
         const txt = parts.map(p=>p.text).filter(Boolean).join('\n') || 'Sin respuesta.';
-        out.innerHTML = `<h3>Respuesta de IA</h3><div class="msg">${mdToHtml(escapeHtml(txt))}</div>`;
+        out.innerHTML = `<h3>Respuesta de IA 🌾</h3><div class="msg">${mdToHtml(escapeHtml(txt))}</div>`;
       } catch(err){
         markFieldERR('apiKey');
         markFieldERR('modelSel');
@@ -829,15 +1136,20 @@
       }
     });
 
-    // Markdown mínimo → HTML (negritas, listas, saltos)
+    // Markdown mínimo → HTML (negritas, listas, saltos) con emojis y cambio de '*'
     function mdToHtml(s){
       return s
-        .replace(/^\s*\*\s+(.*)$/gm,'<li>$1</li>')
+        // Viñetas que empiecen con *, - o + → lista con emoji 🌱
+        .replace(/^\s*[\*\-\+]\s+(.*)$/gm, '<li>🌱 $1</li>')
         .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
-        .replace(/\n\n/g,'</p><p>')
+        // Párrafos dobles
+        .replace(/\n{2,}/g,'</p><p>')
+        // Saltos de línea simples
         .replace(/\n/g,'<br>')
+        // Agrupar elementos <li> en una lista <ul>
         .replace(/(<li>.*<\/li>)/gs,'<ul>$1</ul>');
     }
+
     function escapeHtml(s){
       return String(s).replace(/[&<>"']/g, m=> ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[m]));
     }
@@ -860,21 +1172,74 @@
       let pass = 0, fail = 0;
       ids.forEach(id=>{ const ok = !!el(id); ok ? pass++ : fail++; log(`Elemento #${id} ${ok?'presente':'faltante'}`, ok); });
       // Test interpretación
-      try{ const demo = {ph:5.6, ec:3.8, om:1.8, n:18, p:12, k:70, s:6, cec:8, ca:6, mg:2, fe:5.5, zn:0.45, mn:9, cu:0.25, b:0.9}; Object.entries(demo).forEach(([k,v])=>{ if(el(k)) el(k).value = v; }); buildInterpretation(); const txt = el('results')?.innerText || ''; const checks = ['pH','Conductividad eléctrica','Materia orgánica','Fósforo','Potasio','CEC','Zinc']; const okAll = checks.every(c=> txt.includes(c)); log('Interpretación genera bloques esperados', okAll); okAll ? pass++ : fail++; }catch(e){ log('Interpretación lanzó error: '+e.message, false); fail++; }
+      try{ 
+        const demo = {ph:5.6, ec:3.8, om:1.8, n:18, p:12, k:70, s:6, cec:8, ca:6, mg:2, fe:5.5, zn:0.45, mn:9, cu:0.25, b:0.9}; 
+        Object.entries(demo).forEach(([k,v])=>{ if(el(k)) el(k).value = v; }); 
+        buildInterpretation(); 
+        const txt = el('results')?.innerText || ''; 
+        const checks = ['pH','Conductividad eléctrica','Materia orgánica','Fósforo','Potasio','CEC','Zinc']; 
+        const okAll = checks.every(c=> txt.includes(c)); 
+        log('Interpretación genera bloques esperados', okAll); 
+        okAll ? pass++ : fail++; 
+      }catch(e){ log('Interpretación lanzó error: '+e.message, false); fail++; }
       // Test guardar/cargar (localStorage)
-      try{ const sample = {ph:'6.2',p:'25',crop:'Café'}; Object.entries(sample).forEach(([k,v])=>{ if(el(k)) el(k).value=v; }); saveForm(); const raw = localStorage.getItem(LS_DATA); const okSave = !!raw; log('Guardado en localStorage', okSave); okSave ? pass++ : fail++; document.querySelectorAll('input, textarea, select').forEach(x=>{ if(x.type==='checkbox') x.checked=false; else x.value=''; }); loadForm(); const okLoad = (el('ph')?.value==='6.2' && el('p')?.value==='25' && el('crop')?.value==='Café'); log('Carga desde localStorage', okLoad); okLoad ? pass++ : fail++; }catch(e){ log('Guardar/Cargar falló: '+e.message, false); fail++; }
+      try{ 
+        const sample = {ph:'6.2',p:'25',crop:'Café'}; 
+        Object.entries(sample).forEach(([k,v])=>{ if(el(k)) el(k).value=v; }); 
+        saveForm(); 
+        const raw = localStorage.getItem(LS_DATA); 
+        const okSave = !!raw; 
+        log('Guardado en localStorage', okSave); 
+        okSave ? pass++ : fail++; 
+        document.querySelectorAll('input, textarea, select').forEach(x=>{ if(x.type==='checkbox') x.checked=false; else x.value=''; }); 
+        loadForm(); 
+        const okLoad = (el('ph')?.value==='6.2' && el('p')?.value==='25' && el('crop')?.value==='Café'); 
+        log('Carga desde localStorage', okLoad); 
+        okLoad ? pass++ : fail++; 
+      }catch(e){ log('Guardar/Cargar falló: '+e.message, false); fail++; }
       // Test preserva API Key al limpiar
       try{ if(el('apiKey')){ el('apiKey').value='KEY123'; clearForm(true); const okKeep = el('apiKey').value==='KEY123'; log('Limpiar preserva API Key', okKeep); okKeep?pass++:fail++; }}catch(e){ log('Prueba clear preserva key falló: '+e.message, false); fail++; }
       // Test toggle mostrar/ocultar API Key
-      try{ const f=el('apiKey'), b=el('btnToggleKey'); if(f&&b){ const t0=f.type; toggleKeyVisibility(); const t1=f.type; toggleKeyVisibility(); const okT = (t0==='password' && t1==='text' && f.type==='password'); log('Toggle mostrar/ocultar API Key', okT); okT?pass++:fail++; }}catch(e){ log('Toggle key falló: '+e.message, false); fail++; }
+      try{ 
+        const f=el('apiKey'), b=el('btnToggleKey'); 
+        if(f&&b){ 
+          const t0=f.type; 
+          toggleKeyVisibility(); 
+          const t1=f.type; 
+          toggleKeyVisibility(); 
+          const okT = (t0==='password' && t1==='text' && f.type==='password'); 
+          log('Toggle mostrar/ocultar API Key', okT); 
+          okT?pass++:fail++; 
+        }
+      }catch(e){ log('Toggle key falló: '+e.message, false); fail++; }
       // Test generador de HTML imprimible
-      try{ const html = makePrintableHTML(); const okHtml = typeof html === 'string' && html.includes('<table') && html.length > 200; log('Generador de HTML imprimible', okHtml); okHtml ? pass++ : fail++; }catch(e){ log('Generador HTML falló: '+e.message, false); fail++; }
+      try{ 
+        const html = makePrintableHTML(); 
+        const okHtml = typeof html === 'string' && html.includes('<table') && html.length > 200; 
+        log('Generador de HTML imprimible', okHtml); 
+        okHtml ? pass++ : fail++; 
+      }catch(e){ log('Generador HTML falló: '+e.message, false); fail++; }
       // Test HTML imprimible es parseable (sin errores de sintaxis)
-      try{ const html = makePrintableHTML(); const doc = new DOMParser().parseFromString(html, 'text/html'); const noErr = !doc.querySelector('parsererror'); log('HTML imprimible parsea sin errores', noErr); noErr ? pass++ : fail++; }catch(e){ log('Parser de HTML arrojó error: '+e.message, false); fail++; }
+      try{ 
+        const html = makePrintableHTML(); 
+        const doc = new DOMParser().parseFromString(html, 'text/html'); 
+        const noErr = !doc.querySelector('parsererror'); 
+        log('HTML imprimible parsea sin errores', noErr); 
+        noErr ? pass++ : fail++; 
+      }catch(e){ log('Parser de HTML arrojó error: '+e.message, false); fail++; }
       // Test inclusión de IA en impresión
-      try{ const aiDemo = '<h3>Respuesta de IA</h3><div class="msg">Recomendación demo</div>'; const aiOut = el('aiOut'); if(aiOut){ aiOut.style.display='block'; aiOut.innerHTML = aiDemo; } const html2 = makePrintableHTML(); const okAI = html2.includes('Recomendación demo'); log('Impresión incluye recomendaciones IA si existen', okAI); okAI ? pass++ : fail++; }catch(e){ log('Inclusión IA en reporte falló: '+e.message, false); fail++; }
+      try{ 
+        const aiDemo = '<h3>Respuesta de IA</h3><div class="msg">Recomendación demo</div>'; 
+        const aiOut = el('aiOut'); 
+        if(aiOut){ aiOut.style.display='block'; aiOut.innerHTML = aiDemo; } 
+        const html2 = makePrintableHTML(); 
+        const okAI = html2.includes('Recomendación demo'); 
+        log('Impresión incluye recomendaciones IA si existen', okAI); 
+        okAI ? pass++ : fail++; 
+      }catch(e){ log('Inclusión IA en reporte falló: '+e.message, false); fail++; }
 
-      const status = el('testStatus'); if(status){ status.textContent = `Pruebas: ${pass} ok / ${fail} fallas`; status.className = fail? 't-fail' : 't-pass'; }
+      const status = el('testStatus'); 
+      if(status){ status.textContent = `Pruebas: ${pass} ok / ${fail} fallas`; status.className = fail? 't-fail' : 't-pass'; }
     }
 
     el('btnRunTests')?.addEventListener('click', runSelfTests);
